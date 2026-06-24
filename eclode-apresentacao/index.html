@@ -1,0 +1,155 @@
+<!doctype html>
+<html lang="pt-BR">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <meta name="theme-color" content="#171817" />
+    <title>Eclode — apresentação viva</title>
+    <link rel="stylesheet" href="./styles.css?v=8" />
+  </head>
+  <body>
+    <div class="app" id="app">
+      <aside class="editor-panel" id="editorPanel">
+        <div class="brand-row">
+          <img class="brand-header-mark" src="./eclode_marca_branca.svg" alt="" />
+          <div>
+            <small>apresentação viva</small>
+          </div>
+        </div>
+
+        <div class="panel-section">
+          <div class="section-heading">
+            <span>Páginas</span>
+            <button class="icon-button" id="addPage" title="Nova página">＋</button>
+          </div>
+          <div class="page-list" id="pageList"></div>
+        </div>
+
+        <div class="panel-section controls">
+          <label>
+            Layout
+            <select id="layoutSelect">
+              <option value="cover">Capa</option>
+              <option value="statement">Manifesto</option>
+              <option value="single">1 imagem + texto</option>
+              <option value="split">2 imagens + texto</option>
+              <option value="triple">3 imagens + texto</option>
+              <option value="gallery">4 imagens + texto</option>
+              <option value="timeline">Linha do tempo</option>
+              <option value="bullets">Bullets adaptáveis</option>
+              <option value="metrics">Dados</option>
+            </select>
+          </label>
+          <label>
+            Cor da marca
+            <input id="brandColorInput" type="color" />
+          </label>
+          <label>
+            Cor do degradê
+            <input id="gradientColorInput" type="color" />
+          </label>
+          <label>
+            Cor do texto
+            <input id="textColorInput" type="color" />
+          </label>
+          <div class="alignment-control">
+            <span>Alinhamento</span>
+            <div class="alignment-buttons">
+              <button id="alignLeftButton" type="button">Esquerda</button>
+              <button id="alignCenterButton" type="button">Centro</button>
+            </div>
+          </div>
+          <label>
+            Tamanho do texto
+            <input id="textSizeInput" type="range" min="55" max="170" />
+          </label>
+          <label>
+            Largura do texto
+            <input id="textWidthInput" type="range" min="25" max="100" />
+          </label>
+          <label>
+            Reatividade
+            <input id="energyInput" type="range" min="0" max="100" />
+          </label>
+          <label>
+            Modo sonoro
+            <select id="reactiveModeSelect">
+              <option value="breathe">Respiração</option>
+              <option value="flow">Fluxo</option>
+              <option value="burst">Explosão</option>
+            </select>
+          </label>
+          <label>
+            Tamanho dos pontos
+            <input id="particleSizeInput" type="range" min="40" max="220" />
+          </label>
+          <label>
+            Mostrar marca
+            <input id="brandVisibleInput" type="checkbox" />
+          </label>
+          <label>
+            Marca horizontal
+            <input id="brandXInput" type="range" min="-60" max="160" />
+          </label>
+          <label>
+            Marca vertical
+            <input id="brandYInput" type="range" min="5" max="95" />
+          </label>
+          <label>
+            Tamanho da marca
+            <input id="brandSizeInput" type="range" min="45" max="160" />
+          </label>
+        </div>
+
+        <div class="panel-section bullet-controls" id="bulletControls" hidden>
+          <div class="section-heading">
+            <span>Bullets</span>
+            <button class="icon-button" id="addBullet" title="Adicionar bullet">＋</button>
+          </div>
+          <p>Use “×” ao lado de um item para removê-lo.</p>
+        </div>
+
+        <button class="audio-button" id="audioToggle">Ativar reação ao som</button>
+
+        <div class="panel-actions">
+          <button id="movePageUp">Subir página</button>
+          <button id="movePageDown">Descer página</button>
+          <button id="duplicatePage">Duplicar</button>
+          <button id="deletePage">Excluir</button>
+          <button id="exportDeck">Backup</button>
+          <label class="button-like">
+            Importar
+            <input id="importDeck" type="file" accept=".json" hidden />
+          </label>
+        </div>
+
+        <p class="save-state"><span></span><span id="saveState">Salvo neste navegador</span></p>
+      </aside>
+
+      <main class="stage-shell">
+        <div class="topbar">
+          <button id="toggleEditor">Ocultar editor</button>
+          <div class="topbar-center">clique em qualquer texto para editar</div>
+          <button id="presentMode">Apresentar ↗</button>
+        </div>
+
+        <section class="stage" id="stage" aria-live="polite">
+          <canvas id="organism"></canvas>
+          <div class="grain"></div>
+          <div class="slide-content" id="slideContent"></div>
+          <div class="slide-index" id="slideIndex"></div>
+        </section>
+
+        <nav class="stage-nav">
+          <button id="prevPage" aria-label="Página anterior">←</button>
+          <div id="dots" class="dots"></div>
+          <button id="nextPage" aria-label="Próxima página">→</button>
+        </nav>
+      </main>
+    </div>
+
+    <div class="toast" id="toast"></div>
+    <input id="imagePicker" type="file" accept="image/*" hidden />
+    <script src="./app.js?v=23"></script>
+  </body>
+</html>

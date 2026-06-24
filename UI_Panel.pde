@@ -1,0 +1,2605 @@
+void desenharBarra() {
+  pushStyle();
+  pushMatrix();
+  resetMatrix();
+  colorMode(RGB, 255);
+  blendMode(BLEND);
+  noTint();
+  aplicarFonteUi();
+  desenharMenuLateral();
+  desenharMenuPadroes();
+  desenharBotaoMostrar();
+  desenharBotaoMostrarPadroes();
+  desenharTabsCentro();
+  noTint();
+  blendMode(BLEND);
+  colorMode(RGB, 255);
+  popMatrix();
+  popStyle();
+}
+
+void desenharHeaderApp() {
+  noStroke();
+  fill(UI_LIGHT);
+  rect(0, 0, width, uiHeaderHeight);
+  stroke(UI_DARK);
+  line(0, uiHeaderHeight - 1, width, uiHeaderHeight - 1);
+  noStroke();
+
+  float logoX = width * 0.5;
+  float logoY = uiHeaderHeight * 0.5;
+  if (interfaceLogoSvg != null && interfaceLogoSvg.width > 0 && interfaceLogoSvg.height > 0) {
+    shapeMode(CENTER);
+    interfaceLogoSvg.disableStyle();
+    fill(UI_DARK);
+    noStroke();
+    float logoH = min(52, uiHeaderHeight - 18);
+    float logoW = logoH * interfaceLogoSvg.width / max(1, interfaceLogoSvg.height);
+    shape(interfaceLogoSvg, logoX, logoY, logoW, logoH);
+  } else if (interfaceLogo != null && interfaceLogo.width > 0 && interfaceLogo.height > 0) {
+    imageMode(CENTER);
+    noTint();
+    float logoH = min(52, uiHeaderHeight - 18);
+    float logoW = logoH * interfaceLogo.width / float(interfaceLogo.height);
+    image(interfaceLogo, logoX, logoY, logoW, logoH);
+  } else {
+    fill(UI_DARK);
+    textAlign(CENTER, CENTER);
+    textSize(constrain(height * 0.024, 18, 23));
+    text(APP_NAME, logoX, logoY);
+  }
+}
+
+void desenharAvisoStatus() {
+  if (!salvarFlash || statusMessage == null || statusMessage.length() == 0) return;
+
+  pushStyle();
+  colorMode(RGB, 255);
+  aplicarFonteUi();
+  float alpha = constrain(map(salvarTimer, 0, 120, 0, 1), 0, 1);
+  if (salvarTimer > 24) alpha = 1;
+  float x = max(18, menuOffsetX + 18);
+  float y = max(uiHeaderHeight + uiTabsHeight + 16, height - 74);
+  float labelSize = constrain(height * 0.014, 10.5, 12.5);
+  textSize(labelSize);
+  float tw = min(width * 0.42, textWidth(statusMessage) + 34);
+  float th = 34;
+
+  noStroke();
+  fill(UI_LIGHT);
+  rect(x, y, tw, th, 7);
+  fill(UI_GREEN);
+  rect(x, y + 6, 3, th - 12, 2);
+  fill(UI_DARK);
+  textAlign(LEFT, CENTER);
+  text(statusMessage, uiSnap(x + 15), uiSnap(y + th * 0.5));
+  popStyle();
+}
+
+void desenharAvisoTelaCheiaMarca() {
+  pushStyle();
+  pushMatrix();
+  resetMatrix();
+  colorMode(RGB, 255);
+  aplicarFonteUi();
+
+  float pad = 18;
+  float x = pad;
+  float y = pad;
+  float w = 228;
+  float h = 34;
+  float labelSize = constrain(height * 0.014, 10.5, 12.5);
+
+  noStroke();
+  fill(239, 235, 232, 232);
+  rect(x, y, w, h, 7);
+  fill(104, 124, 73);
+  rect(x, y + 6, 3, h - 12, 2);
+
+  fill(34, 38, 38);
+  textAlign(LEFT, CENTER);
+  textSize(labelSize);
+  text("ESC, X ou F11 para sair", uiSnap(x + 15), uiSnap(y + h * 0.5));
+
+  popMatrix();
+  popStyle();
+}
+
+void aplicarFonteUi() {
+  textMode(MODEL);
+  if (fontUi != null) textFont(fontUi, uiTextSize(18));
+  else if (fontHelv != null) textFont(fontHelv, uiTextSize(18));
+  textAlign(LEFT, BASELINE);
+}
+
+String rotuloInterface(String texto) {
+  if (texto == null) return "";
+  String t = texto.trim();
+  if (t.length() == 0) return t;
+  if (uiRotuloCache != null && uiRotuloCache.containsKey(t)) {
+    return uiRotuloCache.get(t);
+  }
+  String lower = t.toLowerCase();
+  lower = lower.replace("svg", "SVG");
+  lower = lower.replace("png", "PNG");
+  lower = lower.replace("jpg", "JPG");
+  lower = lower.replace("mp4", "MP4");
+  lower = lower.replace("hex", "HEX");
+  lower = lower.replace("a4", "A4");
+  lower = lower.replace("rtl", "RTL");
+  lower = lower.replace("vu", "VU");
+  String out = lower;
+  for (int i = 0; i < lower.length(); i++) {
+    char ch = lower.charAt(i);
+    if (Character.isLetter(ch)) {
+      out = lower.substring(0, i) + Character.toUpperCase(ch) + lower.substring(i + 1);
+      break;
+    }
+  }
+  if (uiRotuloCache != null && uiRotuloCache.size() < 512) {
+    uiRotuloCache.put(t, out);
+  }
+  return out;
+}
+
+float tamanhoTextoFixo(float tamanhoBase, float tamanhoMin) {
+  return max(tamanhoBase, tamanhoMin);
+}
+
+float uiSnap(float valor) {
+  return round(valor);
+}
+
+float uiTextSize(float valor) {
+  return max(1, round(valor));
+}
+
+float uiGapButton() {
+  return 8;
+}
+
+float uiGapDividerTitle() {
+  return 16;
+}
+
+float uiGapTitleContent() {
+  return 24;
+}
+
+float uiGapSection() {
+  return 32;
+}
+
+float uiGapStatus() {
+  return 12;
+}
+
+float uiSidebarTopMargin() {
+  return 10;
+}
+
+float uiSidebarHeaderHeight() {
+  return 68;
+}
+
+float uiSidebarLogoGap() {
+  return 18;
+}
+
+float uiSidebarContentClipPad() {
+  return 8;
+}
+
+float uiPanelTopGap() {
+  return 16;
+}
+
+PGraphics obterLogoInterfaceCache(float maxW, float maxH) {
+  int targetW = max(1, round(maxW));
+  int targetH = max(1, round(maxH));
+  if (interfaceLogoCache != null && interfaceLogoCacheW == targetW && interfaceLogoCacheH == targetH) {
+    return interfaceLogoCache;
+  }
+
+  interfaceLogoCacheW = targetW;
+  interfaceLogoCacheH = targetH;
+  interfaceLogoCache = createGraphics(targetW, targetH, P2D);
+  interfaceLogoCache.smooth(8);
+  interfaceLogoCache.beginDraw();
+  interfaceLogoCache.clear();
+  interfaceLogoCache.colorMode(RGB, 255);
+
+  if (interfaceLogoSvg != null) {
+    interfaceLogoCache.shapeMode(CENTER);
+    interfaceLogoSvg.disableStyle();
+    interfaceLogoCache.colorMode(RGB, 255);
+    interfaceLogoCache.fill(UI_DARK);
+    interfaceLogoCache.noStroke();
+    float defaultAspect = 3.15;
+    float rawAspect = (interfaceLogoSvg.width > 1 && interfaceLogoSvg.height > 1) ? interfaceLogoSvg.width / max(1, interfaceLogoSvg.height) : defaultAspect;
+    float logoH = min(targetH * 0.96, 54);
+    float logoW = min(targetW * 0.98, logoH * rawAspect);
+    interfaceLogoCache.shape(interfaceLogoSvg, logoW * 0.5, targetH * 0.5, logoW, logoH);
+  } else if (interfaceLogo != null && interfaceLogo.width > 0 && interfaceLogo.height > 0) {
+    interfaceLogoCache.imageMode(CENTER);
+    interfaceLogoCache.tint(canalR(UI_DARK), canalG(UI_DARK), canalB(UI_DARK), 255);
+    float logoH = min(targetH * 0.94, 52);
+    float logoW = min(targetW * 0.98, logoH * interfaceLogo.width / float(interfaceLogo.height));
+    interfaceLogoCache.image(interfaceLogo, logoW * 0.5, targetH * 0.5, logoW, logoH);
+    interfaceLogoCache.noTint();
+  } else {
+    interfaceLogoCache.fill(UI_DARK);
+    interfaceLogoCache.textAlign(CENTER, CENTER);
+    if (fontUi != null) interfaceLogoCache.textFont(fontUi, 18);
+    interfaceLogoCache.text(rotuloInterface(APP_NAME), targetW * 0.5, targetH * 0.5);
+  }
+  interfaceLogoCache.endDraw();
+  return interfaceLogoCache;
+}
+
+float desenharCabecalhoLateralFixo(float panelX, float innerX, float trackWidth) {
+  float headerTop = uiSnap(uiSidebarTopMargin());
+  float headerH = uiSnap(uiSidebarHeaderHeight());
+  float headerBottom = headerTop + headerH;
+  float headerCenterY = headerTop + headerH * 0.5;
+
+  noStroke();
+  fill(UI_LIGHT);
+  rect(uiSnap(panelX), headerTop, uiSnap(menuWidth), headerH);
+  stroke(UI_DARK);
+  line(uiSnap(panelX + menuPadding), uiSnap(headerBottom), uiSnap(panelX + menuWidth - menuPadding), uiSnap(headerBottom));
+  noStroke();
+
+  PGraphics cache = obterLogoInterfaceCache(trackWidth, headerH - 10);
+  if (cache != null && cache.width > 0 && cache.height > 0) {
+    imageMode(CORNER);
+    image(cache, uiSnap(innerX), uiSnap(headerCenterY - cache.height * 0.5), cache.width, cache.height);
+    imageMode(CORNER);
+  } else if (interfaceLogoSvg != null) {
+    shapeMode(CENTER);
+    interfaceLogoSvg.disableStyle();
+    fill(UI_DARK);
+    noStroke();
+    float logoH = min(headerH * 0.82, 50);
+    float logoW = min(trackWidth * 0.98, logoH * 3.15);
+    shape(interfaceLogoSvg, uiSnap(innerX + logoW * 0.5), uiSnap(headerCenterY), logoW, logoH);
+    shapeMode(CORNER);
+  } else if (interfaceLogo != null && interfaceLogo.width > 0 && interfaceLogo.height > 0) {
+    imageMode(CENTER);
+    tint(canalR(UI_DARK), canalG(UI_DARK), canalB(UI_DARK), 255);
+    float logoH = min(headerH * 0.80, 48);
+    float logoW = min(trackWidth * 0.98, logoH * interfaceLogo.width / float(interfaceLogo.height));
+    image(interfaceLogo, uiSnap(innerX + logoW * 0.5), uiSnap(headerCenterY), logoW, logoH);
+    noTint();
+    imageMode(CORNER);
+  }
+  return headerBottom;
+}
+
+void desenharBotaoHeader(float x, float y, float w, float h, String label) {
+  stroke(UI_GREEN);
+  fill(UI_LIGHT);
+  rect(x, y, w, h, 6);
+  noStroke();
+  fill(UI_DARK);
+  textoCentralizadoAjustado(rotuloInterface(label), x + w * 0.5, y + h * 0.5, w - 18, constrain(height * 0.0145, 10.5, 12.5), 9.5);
+}
+
+void desenharTabsCentro() {
+  colorMode(RGB, 255);
+  float leftX = uiSnap(max(0, menuOffsetX + menuWidth));
+  float rightX = uiSnap(width - painelPadraoWidth + painelPadraoOffsetX);
+  float tabsX = leftX;
+  float tabsW = uiSnap(max(0, rightX - leftX));
+  float tabsY = uiSnap(uiHeaderHeight);
+  if (tabsW < 80) return;
+
+  noStroke();
+  fill(UI_LIGHT);
+  rect(tabsX, tabsY, tabsW, uiTabsHeight);
+  stroke(UI_DARK);
+  line(tabsX, tabsY + uiTabsHeight - 1, tabsX + tabsW, tabsY + uiTabsHeight - 1);
+  noStroke();
+
+  float tabW = tabsW / uiTopTabButtons.length;
+  for (int i = 0; i < uiTopTabButtons.length; i++) {
+    float x = tabsX + i * tabW;
+    uiTopTabButtons[i][0] = x;
+    uiTopTabButtons[i][1] = tabsY;
+    uiTopTabButtons[i][2] = tabW;
+    uiTopTabButtons[i][3] = uiTabsHeight;
+
+    boolean ativo = (uiTopTabPages[i] == appPage);
+    boolean hover = mouseX >= x && mouseX <= x + tabW && mouseY >= tabsY && mouseY <= tabsY + uiTabsHeight;
+    if (ativo) {
+      fill(UI_GREEN);
+      rect(x + 5, tabsY + 5, tabW - 10, uiTabsHeight - 10, 5);
+    } else if (hover) {
+      noFill();
+      stroke(UI_GREEN);
+      rect(x + 5, tabsY + 5, tabW - 10, uiTabsHeight - 10, 5);
+      noStroke();
+    }
+    fill(ativo ? UI_LIGHT : UI_DARK);
+    textoCentralizadoAjustado(rotuloInterface(uiTopTabLabels[i]), x + tabW * 0.5, tabsY + uiTabsHeight * 0.5, tabW - 20, constrain(height * 0.018, 14, 18), 12);
+
+    if (ativo) {
+      fill(UI_DARK);
+      rect(x + tabW * 0.36, tabsY + uiTabsHeight - 2, tabW * 0.28, 2);
+    }
+  }
+}
+
+void desenharMenuLateral() {
+  float panelX = uiSnap(menuOffsetX);
+  float panelInnerX = uiSnap(panelX + menuPadding);
+  float trackWidth = uiSnap(max(96, menuWidth - (menuPadding * 2)));
+  desenharPainelBase(panelX, menuWidth, true);
+  float headerBottomY = uiSnap(desenharCabecalhoLateralFixo(panelX, panelInnerX, trackWidth));
+  float contentStartY = uiSnap(headerBottomY + uiSidebarLogoGap());
+  float y = uiSnap(contentStartY - menuScrollY);
+  float buttonH = uiSnap(constrain(height * 0.044, 30, 38));
+  float sectionGap = uiGapSection();
+  float labelSize = uiTextSize(constrain(min(width, height) * 0.0158, 11, 14));
+  float titleSize = uiTextSize(constrain(min(width, height) * 0.024, 16, 21));
+
+  clip(panelX, uiSnap(contentStartY - uiSidebarContentClipPad()), menuWidth, max(0, height - (contentStartY - uiSidebarContentClipPad())));
+  limparBotoesPagina();
+
+  if (appPage == 0) {
+    y = desenharPainelDesignEsquerdo(panelInnerX, y, trackWidth, buttonH, labelSize, titleSize);
+  } else if (appPage == 2) {
+    y = desenharPainelPanfletoEsquerdo(panelInnerX, y, trackWidth, buttonH, labelSize, titleSize);
+  } else if (appPage == 3) {
+    y = desenharPainelEstampaEsquerdo(panelInnerX, y, trackWidth, buttonH, labelSize, titleSize);
+  } else {
+    y = desenharPainelExportEsquerdo(panelInnerX, y, trackWidth, buttonH, labelSize, titleSize);
+  }
+
+  noClip();
+  float legacyContentHeight = y + menuScrollY + 22;
+  menuMaxScrollY = max(0, legacyContentHeight - height);
+  menuScrollY = constrain(menuScrollY, 0, menuMaxScrollY);
+  menuScrollTargetY = constrain(menuScrollTargetY, 0, menuMaxScrollY);
+  desenharScrollMenu(panelX, menuMaxScrollY);
+  if (appPage >= 0) return;
+
+  linhaReativosButton[0] = panelInnerX;
+  linhaReativosButton[1] = y;
+  linhaReativosButton[2] = trackWidth;
+  linhaReativosButton[3] = buttonH;
+  desenharBotaoAcaoEstado(linhaReativosButton, modoLinhaReativos ? "Modo palavra: ON" : "Modo palavra: OFF", modoLinhaReativos);
+  y += linhaReativosButton[3] + 8;
+
+  simboloPrincipalButton[0] = panelInnerX;
+  simboloPrincipalButton[1] = y;
+  simboloPrincipalButton[2] = trackWidth;
+  simboloPrincipalButton[3] = buttonH;
+  desenharBotaoAcaoEstado(simboloPrincipalButton, mostrarSimboloPrincipal ? "Símbolo principal: ON" : "Símbolo principal: OFF", mostrarSimboloPrincipal);
+  y += simboloPrincipalButton[3] + 8;
+
+  tipografiaPalavraButton[0] = panelInnerX;
+  tipografiaPalavraButton[1] = y;
+  tipografiaPalavraButton[2] = trackWidth;
+  tipografiaPalavraButton[3] = buttonH;
+  desenharBotaoAcaoEstado(tipografiaPalavraButton, mostrarTipografiaPalavra ? "Identidade: ON" : "Identidade: OFF", mostrarTipografiaPalavra);
+  y += tipografiaPalavraButton[3] + 8;
+
+  float tGap = 8;
+  int totalTipos = max(1, tipografiaVarianteButtons.length);
+  float tW = (trackWidth - tGap * (totalTipos - 1)) / totalTipos;
+  for (int i = 0; i < tipografiaVarianteButtons.length; i++) {
+    tipografiaVarianteButtons[i][0] = panelInnerX + i * (tW + tGap);
+    tipografiaVarianteButtons[i][1] = y;
+    tipografiaVarianteButtons[i][2] = tW;
+    tipografiaVarianteButtons[i][3] = buttonH;
+    String tLabel = tipografiaVarianteLabels[i];
+    desenharBotaoAcaoEstado(tipografiaVarianteButtons[i], tLabel, tipografiaVarianteAtiva == i);
+  }
+  y += buttonH + 12;
+
+  fill(red(UI_GREEN), green(UI_GREEN), blue(UI_GREEN));
+  textAlign(LEFT, TOP);
+  textSize(labelSize);
+  text("Cor logo/símbolo", panelInnerX, y);
+  y += 18;
+
+  float corGap = 8;
+  float corH = constrain(height * 0.038, 24, 32);
+  float corW = (trackWidth - corGap) * 0.5;
+  for (int i = 0; i < modoCorButtons.length; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    modoCorButtons[i][0] = panelInnerX + col * (corW + corGap);
+    modoCorButtons[i][1] = y + row * (corH + corGap);
+    modoCorButtons[i][2] = corW;
+    modoCorButtons[i][3] = corH;
+    desenharBotaoAcaoEstado(modoCorButtons[i], modoCorLabels[i], modoCorGlobal == modoCorValores[i]);
+  }
+  int corRows = (int) ceil(modoCorButtons.length / 2.0);
+  y += corH * corRows + corGap * (corRows - 1) + 14;
+
+  fill(red(UI_GREEN), green(UI_GREEN), blue(UI_GREEN));
+  textAlign(LEFT, TOP);
+  textSize(labelSize);
+  text("Modo forma", panelInnerX, y);
+  y += 18;
+
+  float smallH = constrain(height * 0.040, 26, 34);
+  float gap = 8;
+  float bw = (trackWidth - gap) * 0.5;
+  for (int i = 0; i < 5; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    float bx = panelInnerX + col * (bw + gap);
+    float by = y + row * (smallH + gap);
+    if (i == 4) {
+      bx = panelInnerX;
+      bw = trackWidth;
+    }
+
+    modoFormaButtons[i][0] = bx;
+    modoFormaButtons[i][1] = by;
+    modoFormaButtons[i][2] = (i == 4) ? trackWidth : (trackWidth - gap) * 0.5;
+    modoFormaButtons[i][3] = smallH;
+    desenharBotaoAcaoEstado(modoFormaButtons[i], modoFormaLabels[i], modoFormaManual == i);
+  }
+  y += (smallH + gap) * 3 + sectionGap;
+
+  for (int i = 0; i < sliderVisivel.length; i++) sliderVisivel[i] = false;
+
+  float cabecalhoH = 28;
+  for (int i = 0; i < sliders.length; i++) {
+    sliders[i][0] = -9999;
+    sliders[i][1] = -9999;
+    sliders[i][2] = 0;
+  }
+
+  for (int g = 0; g < sliderGrupoNomes.length; g++) {
+    sliderGrupoCabecalho[g][0] = panelInnerX;
+    sliderGrupoCabecalho[g][1] = y;
+    sliderGrupoCabecalho[g][2] = trackWidth;
+    sliderGrupoCabecalho[g][3] = cabecalhoH;
+    desenharCabecalhoGrupo(g);
+    y += cabecalhoH + 8;
+
+    if (!sliderGrupoAberto[g]) {
+      y += 2;
+      continue;
+    }
+
+    for (int j = 0; j < sliderGrupoIndices[g].length; j++) {
+      int idx = sliderGrupoIndices[g][j];
+      sliders[idx][0] = panelInnerX;
+      sliders[idx][1] = y;
+      sliders[idx][2] = trackWidth;
+      sliderVisivel[idx] = true;
+      desenharSlider(idx);
+      y += constrain(height * 0.050, 30, 38);
+    }
+    y += sectionGap;
+  }
+
+  noClip();
+  float contentHeight = y + menuScrollY + 22;
+  menuMaxScrollY = max(0, contentHeight - height);
+  menuScrollY = constrain(menuScrollY, 0, menuMaxScrollY);
+  desenharScrollMenu(panelX, menuMaxScrollY);
+}
+
+void desenharScrollMenu(float panelX, float maxScroll) {
+  if (maxScroll <= 1) return;
+
+  float trackY = uiSnap(uiSidebarTopMargin() + uiSidebarHeaderHeight() + 8);
+  float trackH = height - trackY - 12;
+  float thumbH = max(36, trackH * (height / (height + maxScroll)));
+  float thumbY = trackY + (trackH - thumbH) * (menuScrollY / maxScroll);
+
+  noStroke();
+  fill(UI_DARK);
+  rect(panelX + menuWidth - 7, trackY, 2, trackH, 2);
+  fill(UI_GREEN);
+  rect(panelX + menuWidth - 9, thumbY, 5, thumbH, 4);
+}
+
+void desenharPainelBase(float panelX, float panelW, boolean esquerda) {
+  pushStyle();
+  colorMode(RGB, 255);
+  blendMode(BLEND);
+  noTint();
+  noStroke();
+  fill(canalR(UI_LIGHT), canalG(UI_LIGHT), canalB(UI_LIGHT), 255);
+  rect(panelX, 0, panelW, height);
+  stroke(canalR(UI_DARK), canalG(UI_DARK), canalB(UI_DARK), 255);
+  if (esquerda) line(panelX + panelW - 1, 0, panelX + panelW - 1, height);
+  else line(panelX, 0, panelX, height);
+  noStroke();
+  popStyle();
+}
+
+void limparBotoesPagina() {
+  zerarBotao(loadBrandButton);
+  zerarBotao(loadImageBrandButton);
+  zerarBotao(randomDNAButton);
+  zerarBotao(resetBrandButton);
+  zerarBotao(freezeBrandButton);
+  zerarBotao(exportFullscreenBrandButton);
+  zerarBotao(exportPngButton);
+  zerarBotao(brandToggleButton);
+  zerarBotao(playlistSaveButton);
+  zerarBotao(estampaFotoAddButton);
+  zerarBotao(estampaFotoLimparButton);
+  zerarBotao(estampaRandomButton);
+  zerarBotao(estampaExportPngButton);
+  zerarBotao(estampaExportJpgButton);
+  zerarBotao(estampaExportMp4Button);
+  zerarBotao(estampaCoresMarcaButton);
+  for (int i = 0; i < estampaColorButtons.length; i++) zerarBotao(estampaColorButtons[i]);
+  for (int i = 0; i < estampaPreviewButtons.length; i++) zerarBotao(estampaPreviewButtons[i]);
+  for (int i = 0; i < estampaHsvSliders.length; i++) zerarSliderArray(estampaHsvSliders[i]);
+  zerarBotao(panfletoExportPngButton);
+  zerarBotao(panfletoExportMp4Button);
+  zerarBotao(panfletoMidiaAddButton);
+  zerarBotao(panfletoTextoAddButton);
+  for (int i = 0; i < panfletoTextoCorButtons.length; i++) zerarBotao(panfletoTextoCorButtons[i]);
+  for (int i = 0; i < panfletoTextoMatizSlider.length; i++) panfletoTextoMatizSlider[i] = 0;
+  zerarBotao(panfletoFundoPaletaToggleButton);
+  zerarBotao(panfletoFundoPaletaAddButton);
+  zerarBotao(panfletoFundoPaletaHexField);
+  zerarBotao(panfletoFundoPaletaHexApplyButton);
+  zerarBotao(panfletoFundoPaletaPasteButton);
+  zerarBotao(panfletoFundoPaletaCountMenuButton);
+  for (int i = 0; i < panfletoFundoPaletaCountButtons.length; i++) zerarBotao(panfletoFundoPaletaCountButtons[i]);
+  for (int i = 0; i < panfletoFundoPaletaSlotButtons.length; i++) zerarBotao(panfletoFundoPaletaSlotButtons[i]);
+  zerarBotao(panfletoResetZoomButton);
+  zerarBotao(panfletoAgruparTextosButton);
+  zerarBotao(panfletoLogoExtraToggleButton);
+  zerarBotao(panfletoEstampaToggleButton);
+  zerarBotao(panfletoAvancadoButton);
+  zerarBotao(panfletoSimboloToggleButton);
+  zerarBotao(panfletoSimboloAcimaButton);
+  zerarBotao(panfletoMascaraAddButton);
+  for (int i = 0; i < panfletoLayoutButtons.length; i++) zerarBotao(panfletoLayoutButtons[i]);
+  for (int i = 0; i < panfletoObjetoFormaButtons.length; i++) zerarBotao(panfletoObjetoFormaButtons[i]);
+  for (int i = 0; i < panfletoObjetoQuantidadeButtons.length; i++) zerarBotao(panfletoObjetoQuantidadeButtons[i]);
+  for (int i = 0; i < panfletoFormatoButtons.length; i++) zerarBotao(panfletoFormatoButtons[i]);
+  for (int i = 0; i < panfletoEstampaAplicacaoButtons.length; i++) zerarBotao(panfletoEstampaAplicacaoButtons[i]);
+  for (int i = 0; i < panfletoEstampaBlendButtons.length; i++) zerarBotao(panfletoEstampaBlendButtons[i]);
+  for (int i = 0; i < panfletoEstampaMascaraButtons.length; i++) zerarBotao(panfletoEstampaMascaraButtons[i]);
+  for (int i = 0; i < panfletoMascaraSelectButtons.length; i++) zerarBotao(panfletoMascaraSelectButtons[i]);
+  for (int i = 0; i < panfletoMascaraFluxoButtons.length; i++) zerarBotao(panfletoMascaraFluxoButtons[i]);
+  for (int i = 0; i < panfletoMascaraConteudoButtons.length; i++) zerarBotao(panfletoMascaraConteudoButtons[i]);
+  for (int i = 0; i < panfletoLogoExtraSliders.length; i++) zerarSliderArray(panfletoLogoExtraSliders[i]);
+  for (int i = 0; i < mutationModeButtons.length; i++) zerarBotao(mutationModeButtons[i]);
+  for (int i = 0; i < deformationModeButtons.length; i++) zerarBotao(deformationModeButtons[i]);
+  for (int i = 0; i < identityPresetButtons.length; i++) zerarBotao(identityPresetButtons[i]);
+  for (int i = 0; i < meshDetailButtons.length; i++) zerarBotao(meshDetailButtons[i]);
+  for (int i = 0; i < paletteButtons.length; i++) zerarBotao(paletteButtons[i]);
+  for (int i = 0; i < frequencyInfluenceSliders.length; i++) zerarSliderArray(frequencyInfluenceSliders[i]);
+  for (int i = 0; i < marcaHsvSliders.length; i++) zerarSliderArray(marcaHsvSliders[i]);
+  zerarBotao(marcaPaletaToggleButton);
+  zerarBotao(marcaPaletaAddButton);
+  zerarBotao(marcaPaletaHexField);
+  zerarBotao(marcaPaletaHexApplyButton);
+  zerarBotao(marcaPaletaPasteButton);
+  zerarBotao(marcaPaletaCountMenuButton);
+  for (int i = 0; i < marcaPaletaCountButtons.length; i++) zerarBotao(marcaPaletaCountButtons[i]);
+  for (int i = 0; i < marcaPaletaSlotButtons.length; i++) zerarBotao(marcaPaletaSlotButtons[i]);
+  for (int i = 0; i < playlistSlotButtons.length; i++) zerarBotao(playlistSlotButtons[i]);
+  for (int i = 0; i < exportPageButtons.length; i++) zerarBotao(exportPageButtons[i]);
+}
+
+void zerarBotao(float[] b) {
+  if (b == null || b.length < 4) return;
+  b[0] = -9999;
+  b[1] = -9999;
+  b[2] = 0;
+  b[3] = 0;
+}
+
+void zerarSliderArray(float[] s) {
+  if (s == null) return;
+  for (int i = 0; i < s.length; i++) s[i] = 0;
+}
+
+float tamanhoTextoParaCaber(String texto, float tamanhoBase, float tamanhoMin, float larguraMax) {
+  String t = texto == null ? "" : texto;
+  float size = uiTextSize(tamanhoTextoFixo(tamanhoBase, tamanhoMin));
+  textSize(size);
+  while (size > tamanhoMin && textWidth(t) > larguraMax && t.length() > 18) {
+    size -= 1.0;
+    textSize(size);
+  }
+  return uiTextSize(size);
+}
+
+String textoComReticencias(String texto, float larguraMax, float tamanho) {
+  String t = texto == null ? "" : texto;
+  textSize(uiTextSize(tamanho));
+  if (textWidth(t) <= larguraMax) return t;
+  String ell = "...";
+  while (t.length() > 0 && textWidth(t + ell) > larguraMax) {
+    t = t.substring(0, t.length() - 1);
+  }
+  return t.length() == 0 ? ell : t + ell;
+}
+
+void textoCentralizadoAjustado(String texto, float cx, float cy, float larguraMax, float tamanhoBase, float tamanhoMin) {
+  String t = texto == null ? "" : texto;
+  textAlign(CENTER, CENTER);
+  float size = tamanhoTextoParaCaber(t, tamanhoBase, tamanhoMin, larguraMax);
+  textSize(uiTextSize(size));
+  text(textoComReticencias(t, larguraMax, size), uiSnap(cx), uiSnap(cy));
+}
+
+float desenharTituloPainel(String titulo, float x, float y, float titleSize) {
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  float titleMaxW = (x > width * 0.5) ? painelPadraoWidth - menuPadding * 2 : menuWidth - menuPadding * 2;
+  String tituloUi = rotuloInterface(titulo);
+  float titleTextSize = tamanhoTextoParaCaber(tituloUi, titleSize, 15, titleMaxW);
+  textSize(uiTextSize(titleTextSize));
+  text(textoComReticencias(tituloUi, titleMaxW, titleTextSize), uiSnap(x), uiSnap(y));
+  fill(UI_GREEN);
+  float accentY = y + titleTextSize + 8;
+  rect(uiSnap(x), uiSnap(accentY), 42, 3);
+  return accentY + 3 + uiGapDividerTitle();
+}
+
+float desenharSecaoLabel(String label, float x, float y, float labelSize) {
+  float sectionW = (x > width * 0.5) ? painelPadraoWidth - menuPadding * 2 : menuWidth - menuPadding * 2;
+  sectionW = max(40, sectionW);
+  stroke(UI_DARK);
+  strokeWeight(1);
+  line(x, y, x + sectionW, y);
+  noStroke();
+  y += uiGapDividerTitle();
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  String labelUi = rotuloInterface(label);
+  float sectionTextSize = tamanhoTextoParaCaber(labelUi, constrain(labelSize * 1.28, 14, 17), 12, sectionW);
+  textSize(uiTextSize(sectionTextSize));
+  text(textoComReticencias(labelUi, sectionW, sectionTextSize), uiSnap(x), uiSnap(y));
+  return y + sectionTextSize + uiGapTitleContent();
+}
+
+float desenharPainelDesignEsquerdo(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Entrada", x, y, titleSize);
+
+  y = desenharSecaoLabel("Fonte sonora", x, y, labelSize);
+  fill(audioInputAvailable ? 170 : 120);
+  textAlign(LEFT, TOP);
+  textSize(constrain(height * 0.012, 9, 11));
+  text(rotuloInterface(audioInputAvailable ? "Microfone ao vivo" : "Sem microfone detectado"), x, y);
+  y += 16;
+  desenharVisualizadorFrequencias(x, y, w, 22);
+  y += 34;
+
+  y = desenharSecaoLabel("Identidade importada", x, y, labelSize);
+  loadBrandButton[0] = x;
+  loadBrandButton[1] = y;
+  loadBrandButton[2] = w;
+  loadBrandButton[3] = buttonH;
+  desenharBotaoAcao(loadBrandButton, "Carregar SVG");
+  y += buttonH + uiGapButton();
+
+  loadImageBrandButton[0] = x;
+  loadImageBrandButton[1] = y;
+  loadImageBrandButton[2] = w;
+  loadImageBrandButton[3] = buttonH;
+  desenharBotaoAcao(loadImageBrandButton, "Carregar PNG/JPG");
+  y += buttonH + uiGapButton();
+
+  brandToggleButton[0] = x;
+  brandToggleButton[1] = y;
+  brandToggleButton[2] = w;
+  brandToggleButton[3] = buttonH;
+  desenharBotaoAcaoEstado(brandToggleButton, brandSystemEnabled ? "SISTEMA LIGADO" : "SISTEMA DESLIGADO", brandSystemEnabled);
+  y += buttonH + uiGapButton();
+
+  float bgGap = 8;
+  float bgW = (w - bgGap) * 0.5;
+  brandBackgroundButtons[0][0] = x;
+  brandBackgroundButtons[0][1] = y;
+  brandBackgroundButtons[0][2] = bgW;
+  brandBackgroundButtons[0][3] = buttonH;
+  brandBackgroundButtons[1][0] = x + bgW + bgGap;
+  brandBackgroundButtons[1][1] = y;
+  brandBackgroundButtons[1][2] = bgW;
+  brandBackgroundButtons[1][3] = buttonH;
+  desenharBotaoAcaoEstado(brandBackgroundButtons[0], "Fundo preto", !marcaFundoBranco);
+  desenharBotaoAcaoEstado(brandBackgroundButtons[1], "Fundo branco", marcaFundoBranco);
+  y += buttonH + uiGapStatus();
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  textSize(uiTextSize(constrain(height * 0.014, 10, 12)));
+  text(activeBrandName, uiSnap(x), uiSnap(y));
+  y += uiGapSection();
+
+  y = desenharTituloPainel("Comportamento sonoro", x, y, titleSize);
+
+  randomDNAButton[0] = x;
+  randomDNAButton[1] = y;
+  randomDNAButton[2] = w;
+  randomDNAButton[3] = buttonH;
+  desenharBotaoAcao(randomDNAButton, "Gerar variação");
+  y += buttonH + 8;
+
+  resetBrandButton[0] = x;
+  resetBrandButton[1] = y;
+  resetBrandButton[2] = (w - 8) * 0.5;
+  resetBrandButton[3] = buttonH;
+  desenharBotaoAcao(resetBrandButton, "Restaurar");
+
+  freezeBrandButton[0] = x + resetBrandButton[2] + 8;
+  freezeBrandButton[1] = y;
+  freezeBrandButton[2] = resetBrandButton[2];
+  freezeBrandButton[3] = buttonH;
+  desenharBotaoAcaoEstado(freezeBrandButton, mutationParams != null && mutationParams.freezeState ? "CONGELADO" : "CONGELAR", mutationParams != null && mutationParams.freezeState);
+  y += buttonH + 8;
+
+  float gap = max(5, 8 * constrain(w / 220.0, 0.70, 1.0));
+  float bh = constrain(height * 0.038, 24, 32);
+  int buttonCols = w < 190 ? 1 : 2;
+  float bw = buttonCols == 1 ? w : (w - gap) * 0.5;
+
+  y = desenharSecaoLabel("Densidade de pontos", x, y, labelSize);
+  float densidadePontos = activeBrand != null ? activeBrand.maxRenderPoints : 1800;
+  pointDensitySlider[0] = x;
+  pointDensitySlider[1] = y + 18;
+  pointDensitySlider[2] = w;
+  pointDensitySlider[3] = 150;
+  pointDensitySlider[4] = 5200;
+  pointDensitySlider[5] = densidadePontos;
+  desenharSliderGenerico(pointDensitySlider, "Quantidade", 0);
+  y += 48;
+
+  pointThicknessSlider[0] = x;
+  pointThicknessSlider[1] = y + 18;
+  pointThicknessSlider[2] = w;
+  pointThicknessSlider[3] = 0.6;
+  pointThicknessSlider[4] = 4.0;
+  pointThicknessSlider[5] = pointDotThickness;
+  desenharSliderGenerico(pointThicknessSlider, "Grossura", 1);
+  y += 54;
+
+  y = desenharSecaoLabel("Marca base", x, y, labelSize);
+  int[] baseModes = { 0, 12, 13, 14 };
+  for (int k = 0; k < baseModes.length; k++) {
+    int i = baseModes[k];
+    int col = k % buttonCols;
+    int row = k / buttonCols;
+    mutationModeButtons[i][0] = x + col * (bw + gap);
+    mutationModeButtons[i][1] = y + row * (bh + gap);
+    mutationModeButtons[i][2] = bw;
+    mutationModeButtons[i][3] = bh;
+    boolean ativo = mutationParams != null && mutationParams.mode == i;
+    desenharBotaoAcaoEstado(mutationModeButtons[i], mutationModeLabels[i], ativo);
+  }
+  int baseRows = ceil(baseModes.length / float(buttonCols));
+  y += (bh + gap) * baseRows + uiGapTitleContent();
+
+  y = desenharSecaoLabel("Camadas generativas", x, y, labelSize);
+  int[] generativeModes = { 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 17, 19 };
+  for (int k = 0; k < generativeModes.length; k++) {
+    int i = generativeModes[k];
+    int col = k % buttonCols;
+    int row = k / buttonCols;
+    mutationModeButtons[i][0] = x + col * (bw + gap);
+    mutationModeButtons[i][1] = y + row * (bh + gap);
+    boolean ultimoSozinho = (buttonCols == 2 && generativeModes.length % 2 == 1) && k == generativeModes.length - 1;
+    mutationModeButtons[i][2] = ultimoSozinho ? w : bw;
+    mutationModeButtons[i][3] = bh;
+    boolean ativo = mutationParams != null && mutationParams.mode == i;
+    desenharBotaoAcaoEstado(mutationModeButtons[i], mutationModeLabels[i], ativo);
+  }
+  int visualBaseRows = ceil(generativeModes.length / float(buttonCols));
+  y += (bh + gap) * visualBaseRows + uiGapTitleContent();
+
+  y = desenharSecaoLabel("Comportamento sonoro", x, y, labelSize);
+  for (int i = 0; i < deformationModeButtons.length; i++) {
+    int col = i % buttonCols;
+    int row = i / buttonCols;
+    deformationModeButtons[i][0] = x + col * (bw + gap);
+    deformationModeButtons[i][1] = y + row * (bh + gap);
+    deformationModeButtons[i][2] = (buttonCols == 2 && i == deformationModeButtons.length - 1) ? w : bw;
+    deformationModeButtons[i][3] = bh;
+    boolean ativo = mutationParams != null && mutationParams.deformationMode == i;
+    desenharBotaoAcaoEstado(deformationModeButtons[i], deformationModeLabels[i], ativo);
+  }
+  int deformationRows = ceil(deformationModeButtons.length / float(buttonCols));
+  return y + (bh + gap) * deformationRows + uiGapTitleContent();
+}
+
+float desenharAudioMetersDesign(float x, float y, float w, float labelSize) {
+  y = desenharSecaoLabel(audioInputAvailable ? "Entrada sonora" : "Entrada sonora indisponível", x, y, labelSize);
+  float barH = 5;
+  float gapY = 5;
+  y = desenharAudioMeterLinha("Grave", audioData != null ? audioData.bass : 0, x, y, w, barH);
+  y += gapY;
+  y = desenharAudioMeterLinha("Médio", audioData != null ? audioData.mid : 0, x, y, w, barH);
+  y += gapY;
+  y = desenharAudioMeterLinha("Agudo", audioData != null ? audioData.treble : 0, x, y, w, barH);
+  y += gapY;
+  y = desenharAudioMeterLinha("Energia", audioData != null ? audioData.energy : 0, x, y, w, barH);
+  return y + uiGapButton();
+}
+
+float desenharAudioMeterLinha(String label, float value, float x, float y, float w, float h) {
+  fill(UI_DARK);
+  textAlign(LEFT, CENTER);
+  textSize(constrain(height * 0.0115, 9, 11));
+  text(label, x, y + h * 0.5);
+  float bx = x + 50;
+  float bw = max(10, w - 50);
+  noStroke();
+  fill(UI_DARK);
+  rect(bx, y, bw, h, 3);
+  fill(UI_GREEN);
+  rect(bx, y, bw * constrain(value, 0, 1), h, 3);
+  return y + h;
+}
+
+void desenharSliderLinha(String label, float[] sliderData, float value) {
+  float x = sliderData[0];
+  float y = sliderData[1];
+  float w = sliderData[2];
+  float mn = sliderData[3];
+  float mx = sliderData[4];
+  desenharSliderUi(x, y, w, mn, mx, value, label, 2);
+}
+
+float desenharPainelPanfletoEsquerdo(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Panfleto", x, y, titleSize);
+
+  y = desenharSecaoLabel("Exportar", x, y, labelSize);
+  panfletoExportPngButton[0] = x;
+  panfletoExportPngButton[1] = y;
+  panfletoExportPngButton[2] = w;
+  panfletoExportPngButton[3] = buttonH;
+  desenharBotaoAcao(panfletoExportPngButton, "Exportar panfleto PNG");
+  y += buttonH + 8;
+
+  panfletoExportMp4Button[0] = x;
+  panfletoExportMp4Button[1] = y;
+  panfletoExportMp4Button[2] = w;
+  panfletoExportMp4Button[3] = buttonH;
+  desenharBotaoAcao(panfletoExportMp4Button, "Exportar MP4 10s");
+  y += buttonH + uiGapTitleContent();
+
+  y = desenharSecaoLabel("Estado", x, y, labelSize);
+
+  y = desenharInfoCompacta("Formato", panfletoFormatoLabels[panfletoFormatoAtivo], x, y, w);
+  y = desenharInfoCompacta("Layout", panfletoLayoutLabels[panfletoLayoutAtivo], x, y, w);
+  y = desenharInfoCompacta("Fundo", hexMarca(corFundoPanfletoAtual()), x, y, w);
+  y = desenharInfoCompacta("Foto", panfletoFoto != null ? "carregada" : "nenhuma", x, y, w);
+  y += uiGapStatus();
+
+  y = desenharSecaoLabel("Aplicação", x, y, labelSize);
+  y = desenharInfoCompacta("Posição", nf(panfletoMarcaX, 0, 0) + " / " + nf(panfletoMarcaY, 0, 0), x, y, w);
+  y = desenharInfoCompacta("Tamanho", nf(panfletoMarcaEscala, 0, 2), x, y, w);
+  y = desenharInfoCompacta("Textos", panfletoMostrarTextos ? "ligados" : "desligados", x, y, w);
+  y = desenharInfoCompacta("Símbolo", panfletoMostrarSimbolo ? "ligado" : "desligado", x, y, w);
+  return y + uiGapStatus();
+}
+
+float desenharInfoCompacta(String rotulo, String valor, float x, float y, float w) {
+  float h = constrain(height * 0.032, 22, 28);
+  fill(UI_LIGHT);
+  stroke(UI_DARK);
+  rect(uiSnap(x), uiSnap(y), uiSnap(w), uiSnap(h), 5);
+  noStroke();
+  fill(UI_DARK);
+  textAlign(LEFT, CENTER);
+  float labelSize = uiTextSize(constrain(height * 0.0125, 9.5, 11));
+  textSize(labelSize);
+  text(textoComReticencias(rotulo, w * 0.36, labelSize), uiSnap(x + 9), uiSnap(y + h * 0.5));
+  fill(UI_DARK);
+  textAlign(RIGHT, CENTER);
+  float valorSize = tamanhoTextoParaCaber(valor, constrain(height * 0.0128, 9.8, 11.3), 7.5, w * 0.58);
+  textSize(uiTextSize(valorSize));
+  text(textoComReticencias(valor, w * 0.58, valorSize), uiSnap(x + w - 9), uiSnap(y + h * 0.5));
+  return y + h + uiGapButton();
+}
+
+float desenharPainelEstampaEsquerdo(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Estampa", x, y, titleSize);
+  y = desenharSecaoLabel("Base da identidade", x, y, labelSize);
+
+  estampaFotoAddButton[0] = x;
+  estampaFotoAddButton[1] = y;
+  estampaFotoAddButton[2] = w;
+  estampaFotoAddButton[3] = buttonH;
+  desenharBotaoAcao(estampaFotoAddButton, "Adicionar textura");
+  y += buttonH + 8;
+
+  estampaFotoLimparButton[0] = x;
+  estampaFotoLimparButton[1] = y;
+  estampaFotoLimparButton[2] = w;
+  estampaFotoLimparButton[3] = buttonH;
+  desenharBotaoAcao(estampaFotoLimparButton, "Remover textura");
+  y += buttonH + uiGapStatus();
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  textSize(uiTextSize(labelSize + 1));
+  text("Identidade: " + (activeBrand != null ? activeBrand.name : "nenhuma"), uiSnap(x), uiSnap(y));
+  y += uiGapStatus() + 8;
+  text("Textura: " + (estampaFoto != null ? estampaFoto.width + "x" + estampaFoto.height : "opcional"), uiSnap(x), uiSnap(y));
+  y += uiGapSection();
+
+  y = desenharSecaoLabel("Prévia", x, y, labelSize);
+  float gap = 6;
+  float smallH = constrain(height * 0.035, 23, 29);
+  float bw = (w - gap) * 0.5;
+  for (int i = 0; i < estampaPreviewButtons.length; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    estampaPreviewButtons[i][0] = x + col * (bw + gap);
+    estampaPreviewButtons[i][1] = y + row * (smallH + gap);
+    estampaPreviewButtons[i][2] = bw;
+    estampaPreviewButtons[i][3] = smallH;
+    desenharBotaoAcaoEstado(estampaPreviewButtons[i], estampaPreviewLabels[i], estampaPreviewAtivo == i);
+  }
+  y += (smallH + gap) * 2 + uiGapTitleContent();
+
+  y = desenharSecaoLabel("Aplicação", x, y, labelSize);
+  estampaRandomButton[0] = x;
+  estampaRandomButton[1] = y;
+  estampaRandomButton[2] = w;
+  estampaRandomButton[3] = buttonH;
+  desenharBotaoAcao(estampaRandomButton, "Gerar estampa");
+  y += buttonH + 8;
+
+  float exportGap = 6;
+  float exportW = (w - exportGap) * 0.5;
+  estampaExportPngButton[0] = x;
+  estampaExportPngButton[1] = y;
+  estampaExportPngButton[2] = exportW;
+  estampaExportPngButton[3] = buttonH;
+  desenharBotaoAcao(estampaExportPngButton, "PNG");
+
+  estampaExportJpgButton[0] = x + exportW + exportGap;
+  estampaExportJpgButton[1] = y;
+  estampaExportJpgButton[2] = exportW;
+  estampaExportJpgButton[3] = buttonH;
+  desenharBotaoAcao(estampaExportJpgButton, "JPG");
+  y += buttonH + 8;
+
+  estampaExportMp4Button[0] = x;
+  estampaExportMp4Button[1] = y;
+  estampaExportMp4Button[2] = w;
+  estampaExportMp4Button[3] = buttonH;
+  desenharBotaoAcao(estampaExportMp4Button, videoRecording ? "Parar MP4" : (videoEncoding ? "Gerando MP4..." : "Exportar MP4"));
+  return y + buttonH + uiGapTitleContent();
+}
+
+float desenharPainelExportEsquerdo(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Exportação", x, y, titleSize);
+  freezeBrandButton[0] = x;
+  freezeBrandButton[1] = y;
+  freezeBrandButton[2] = w;
+  freezeBrandButton[3] = buttonH;
+  desenharBotaoAcaoEstado(freezeBrandButton, mutationParams != null && mutationParams.freezeState ? "CONGELADO" : "CONGELAR MARCA", mutationParams != null && mutationParams.freezeState);
+  y += buttonH + uiGapTitleContent();
+
+  exportFullscreenBrandButton[0] = x;
+  exportFullscreenBrandButton[1] = y;
+  exportFullscreenBrandButton[2] = w;
+  exportFullscreenBrandButton[3] = buttonH;
+  desenharBotaoAcaoEstado(exportFullscreenBrandButton, modoMarcaTelaCheia ? "SAIR DA TELA CHEIA" : "TELA CHEIA: MARCA", modoMarcaTelaCheia);
+  y += buttonH + uiGapTitleContent();
+
+  y = desenharSecaoLabel("Exportar", x, y, labelSize);
+  for (int i = 0; i < exportPageButtons.length; i++) {
+    exportPageButtons[i][0] = x;
+    exportPageButtons[i][1] = y;
+    exportPageButtons[i][2] = w;
+    exportPageButtons[i][3] = buttonH;
+    String label = exportPageLabels[i];
+    if (i == 3 && videoRecording) label = "Parar MP4";
+    if (i == 3 && videoEncoding) label = "Gerando MP4...";
+    desenharBotaoAcao(exportPageButtons[i], label);
+    y += buttonH + uiGapButton();
+  }
+  if (videoRecording) {
+    fill(UI_DARK);
+    textAlign(LEFT, TOP);
+    textSize(uiTextSize(constrain(height * 0.014, 10, 12)));
+    text(recordedFrames + " / " + exportFrames + " quadros", uiSnap(x), uiSnap(y));
+    y += uiGapTitleContent();
+  }
+  return y + uiGapStatus();
+}
+
+void desenharMenuPadroes() {
+  painelPadraoOffsetX = aproximarSuave(painelPadraoOffsetX, mostrarBarraPadroes ? 0 : painelPadraoWidth, 0.22);
+
+  float panelX = uiSnap(width - painelPadraoWidth + painelPadraoOffsetX);
+  float pad = menuPadding;
+  float innerX = uiSnap(panelX + pad);
+  float trackWidth = uiSnap(max(96, painelPadraoWidth - (pad * 2)));
+  float y = uiSnap(uiHeaderHeight + uiTabsHeight + uiPanelTopGap() - painelPadraoScrollY);
+  float buttonH = uiSnap(constrain(height * 0.044, 30, 38));
+  float labelSize = uiTextSize(constrain(min(width, height) * 0.0158, 11, 14));
+  float titleSize = uiTextSize(constrain(min(width, height) * 0.024, 16, 21));
+
+  desenharPainelBase(panelX, painelPadraoWidth, false);
+  clip(panelX, 0, painelPadraoWidth, height);
+
+  if (appPage == 0) {
+    y = desenharPainelDesignDireito(innerX, y, trackWidth, buttonH, labelSize, titleSize);
+  } else if (appPage == 2) {
+    y = desenharSecaoPanfleto(innerX, y, trackWidth, buttonH, labelSize);
+  } else if (appPage == 3) {
+    y = desenharPainelEstampaDireito(innerX, y, trackWidth, buttonH, labelSize, titleSize);
+  } else {
+    y = desenharPainelExportDireito(innerX, y, trackWidth, buttonH, labelSize, titleSize);
+  }
+
+  noClip();
+  float contentHeightNew = y + painelPadraoScrollY + 20;
+  painelPadraoMaxScrollY = max(0, contentHeightNew - height);
+  painelPadraoScrollY = constrain(painelPadraoScrollY, 0, painelPadraoMaxScrollY);
+  painelPadraoScrollTargetY = constrain(painelPadraoScrollTargetY, 0, painelPadraoMaxScrollY);
+  desenharScrollPadrao(panelX, painelPadraoMaxScrollY);
+  if (appPage >= 0) return;
+
+  noStroke();
+  fill(UI_LIGHT);
+  rect(panelX, 0, painelPadraoWidth, height);
+  stroke(UI_DARK);
+  line(panelX, 0, panelX, height);
+  noStroke();
+  clip(panelX, 0, painelPadraoWidth, height);
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  textSize(constrain(height * 0.022, 15, 19));
+  text("Panfleto", innerX, y);
+  y += 34;
+
+  modoPadraoButton[0] = innerX;
+  modoPadraoButton[1] = y;
+  modoPadraoButton[2] = trackWidth;
+  modoPadraoButton[3] = buttonH;
+  desenharBotaoAcaoEstado(modoPadraoButton, modoPadraoEstampa ? "Estampa: ON" : "Estampa: OFF", modoPadraoEstampa);
+  y += buttonH + 12;
+
+  fill(red(UI_GREEN), green(UI_GREEN), blue(UI_GREEN));
+  textAlign(LEFT, TOP);
+  textSize(labelSize);
+  text("Linguagem do padrão", innerX, y);
+  y += 18;
+
+  float gap = 8;
+  float smallH = constrain(height * 0.040, 26, 34);
+  float bw = (trackWidth - gap) * 0.5;
+
+  for (int i = 0; i < padraoFormaButtons.length; i++) zerarBotao(padraoFormaButtons[i]);
+  int totalModosEstampa = estampaModoIndices.length;
+  for (int i = 0; i < totalModosEstampa; i++) {
+    int modoReal = estampaModoIndices[i];
+    int col = i % 2;
+    int row = i / 2;
+    padraoFormaButtons[i][0] = innerX + col * (bw + gap);
+    padraoFormaButtons[i][1] = y + row * (smallH + gap);
+    padraoFormaButtons[i][2] = (i == totalModosEstampa - 1 && totalModosEstampa % 2 == 1) ? trackWidth : bw;
+    padraoFormaButtons[i][3] = smallH;
+    desenharBotaoAcaoEstado(padraoFormaButtons[i], estampaModoLabels[modoReal], formaPadraoAtiva == modoReal);
+  }
+
+  y += (smallH + gap) * ceil(totalModosEstampa / 2.0f) + 6;
+  fill(red(UI_GREEN), green(UI_GREEN), blue(UI_GREEN));
+  textAlign(LEFT, TOP);
+  textSize(labelSize);
+  text("Ajustes do sistema", innerX, y);
+  y += 24;
+
+  for (int i = 0; i < padraoSliderVisivel.length; i++) padraoSliderVisivel[i] = true;
+  padraoSliders[0][0] = innerX;
+  padraoSliders[0][1] = y;
+  padraoSliders[0][2] = trackWidth;
+  padraoSliders[0][3] = 6;
+  padraoSliders[0][4] = 36;
+  padraoSliders[0][5] = padraoQtdFormas;
+  desenharSliderPadrao(0);
+  y += constrain(height * 0.050, 30, 38);
+
+  padraoSliders[1][0] = innerX;
+  padraoSliders[1][1] = y;
+  padraoSliders[1][2] = trackWidth;
+  padraoSliders[1][3] = 32;
+  padraoSliders[1][4] = 260;
+  padraoSliders[1][5] = padraoEspacoX;
+  desenharSliderPadrao(1);
+  y += constrain(height * 0.050, 30, 38);
+
+  padraoSliders[2][0] = innerX;
+  padraoSliders[2][1] = y;
+  padraoSliders[2][2] = trackWidth;
+  padraoSliders[2][3] = 32;
+  padraoSliders[2][4] = 260;
+  padraoSliders[2][5] = padraoEspacoY;
+  desenharSliderPadrao(2);
+  y += constrain(height * 0.050, 30, 38);
+
+  padraoSliders[3][0] = innerX;
+  padraoSliders[3][1] = y;
+  padraoSliders[3][2] = trackWidth;
+  padraoSliders[3][3] = 0.12;
+  padraoSliders[3][4] = 1.20;
+  padraoSliders[3][5] = padraoEscala;
+  desenharSliderPadrao(3);
+  y += constrain(height * 0.050, 30, 38);
+
+  padraoSliders[4][0] = innerX;
+  padraoSliders[4][1] = y;
+  padraoSliders[4][2] = trackWidth;
+  padraoSliders[4][3] = -300;
+  padraoSliders[4][4] = 300;
+  padraoSliders[4][5] = padraoRefX;
+  desenharSliderPadrao(4);
+  y += constrain(height * 0.050, 30, 38);
+
+  padraoSliders[5][0] = innerX;
+  padraoSliders[5][1] = y;
+  padraoSliders[5][2] = trackWidth;
+  padraoSliders[5][3] = -260;
+  padraoSliders[5][4] = 260;
+  padraoSliders[5][5] = padraoRefY;
+  desenharSliderPadrao(5);
+  y += constrain(height * 0.050, 30, 38);
+
+  padraoSliders[6][0] = innerX;
+  padraoSliders[6][1] = y;
+  padraoSliders[6][2] = trackWidth;
+  padraoSliders[6][3] = -180;
+  padraoSliders[6][4] = 180;
+  padraoSliders[6][5] = padraoDiagonal;
+  desenharSliderPadrao(6);
+
+  y += constrain(height * 0.050, 30, 38) + uiGapStatus();
+  y = desenharSecaoPanfleto(innerX, y, trackWidth, buttonH, labelSize);
+
+  noClip();
+  float legacyPatternContentHeight = y + painelPadraoScrollY + 20;
+  painelPadraoMaxScrollY = max(0, legacyPatternContentHeight - height);
+  painelPadraoScrollY = constrain(painelPadraoScrollY, 0, painelPadraoMaxScrollY);
+  painelPadraoScrollTargetY = constrain(painelPadraoScrollTargetY, 0, painelPadraoMaxScrollY);
+  desenharScrollPadrao(panelX, painelPadraoMaxScrollY);
+}
+
+void desenharSliderPadrao(int idx) {
+  float sx = padraoSliders[idx][0];
+  float sy = padraoSliders[idx][1];
+  float sw = padraoSliders[idx][2];
+  float mn = padraoSliders[idx][3];
+  float mx = padraoSliders[idx][4];
+  float val = padraoSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, padraoSliderLabels[idx], (idx == 3) ? 3 : 1);
+}
+
+float desenharPainelDesignDireito(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Parâmetros", x, y, titleSize);
+
+  if (mutationParams == null) return y;
+  float[] values = valoresParametrosMutacao();
+  float[] mins = minParametrosMutacao();
+  float[] maxs = maxParametrosMutacao();
+
+  for (int i = 0; i < designParamSliders.length; i++) {
+    zerarSliderDesign(i);
+  }
+
+  y = desenharSecaoLabel("Aparência da marca", x, y, labelSize);
+  float[] hsv = hsvAtualMarca();
+  float[] hsvMin = { 0, 0, 0, 0 };
+  float[] hsvMax = { 360, 100, 100, 100 };
+  float stepHsv = constrain(height * 0.055, 36, 44);
+  float hsvStartY = y;
+  for (int i = 0; i < marcaHsvSliders.length; i++) {
+    marcaHsvSliders[i][0] = x;
+    marcaHsvSliders[i][1] = y;
+    marcaHsvSliders[i][2] = max(40, w - 44);
+    marcaHsvSliders[i][3] = hsvMin[i];
+    marcaHsvSliders[i][4] = hsvMax[i];
+    marcaHsvSliders[i][5] = hsv[i];
+    desenharSliderHsvUnico(marcaHsvSliders[i], marcaHsvLabels[i], i == 0 ? 0 : 1, i, hsv[0], hsv[1], hsv[2]);
+    y += stepHsv;
+  }
+  colorMode(RGB, 255);
+  stroke(UI_DARK);
+  strokeWeight(1);
+  fill(canalR(mutationParams.primaryColor), canalG(mutationParams.primaryColor), canalB(mutationParams.primaryColor), canalA(mutationParams.primaryColor));
+  rect(uiSnap(x + w - 28), uiSnap(hsvStartY - 18), 28, 18, 5);
+  noStroke();
+  y += uiGapButton();
+
+  y = desenharControlePaletaMarca(x, y, w, buttonH, labelSize);
+  y += uiGapButton();
+
+  int[][] grupos = {
+    { 1, 5, 4, 13 },
+    { 6, 3, 19, 8, 9 },
+    { 2, 7, 14 }
+  };
+  String[] nomes = { "Forma", "Movimento", "Textura" };
+
+  for (int g = 0; g < grupos.length; g++) {
+    y = desenharSecaoLabel(nomes[g], x, y, labelSize);
+    for (int j = 0; j < grupos[g].length; j++) {
+      int i = grupos[g][j];
+      designParamSliders[i][0] = x;
+      designParamSliders[i][1] = y;
+      designParamSliders[i][2] = w;
+      designParamSliders[i][3] = mins[i];
+      designParamSliders[i][4] = maxs[i];
+      designParamSliders[i][5] = values[i];
+      int decimals = (i == 6 || i == 8 || i == 9 || i == 13 || i == 14 || i == 16 || i == 18 || i == 19) ? 3 : 2;
+      if (i == 17) decimals = 0;
+      desenharSliderGenerico(designParamSliders[i], designParamLabels[i], decimals);
+      y += constrain(height * 0.055, 36, 44);
+    }
+    y += uiGapTitleContent();
+  }
+
+  return y + uiGapDividerTitle();
+}
+
+float desenharControlePaletaMarca(float x, float y, float w, float buttonH, float labelSize) {
+  y = desenharSecaoLabel("Paleta controlada", x, y, labelSize);
+
+  marcaPaletaToggleButton[0] = x;
+  marcaPaletaToggleButton[1] = y;
+  marcaPaletaToggleButton[2] = w;
+  marcaPaletaToggleButton[3] = buttonH;
+  desenharBotaoAcaoEstado(marcaPaletaToggleButton, marcaPaletaTravada ? "Paleta ligada" : "Paleta desligada", marcaPaletaTravada);
+  y += buttonH + uiGapStatus();
+
+  if (!marcaPaletaTravada) {
+    zerarBotao(marcaPaletaAddButton);
+    zerarBotao(marcaPaletaHexField);
+    zerarBotao(marcaPaletaHexApplyButton);
+    zerarBotao(marcaPaletaPasteButton);
+    zerarBotao(marcaPaletaCountMenuButton);
+    for (int i = 0; i < marcaPaletaCountButtons.length; i++) zerarBotao(marcaPaletaCountButtons[i]);
+    for (int i = 0; i < marcaPaletaSlotButtons.length; i++) zerarBotao(marcaPaletaSlotButtons[i]);
+    return y + uiGapButton();
+  }
+
+  float gap = 8;
+  float targetH = constrain(height * 0.034, 23, 28);
+  y = desenharSeletorQuantidadePaleta(x, y, w, targetH, marcaPaletaCount, 1, marcaPaletaCountMenuButton, marcaPaletaCountButtons);
+  y += uiGapButton();
+
+  marcaPaletaSlotSelecionado = constrain(marcaPaletaSlotSelecionado, 0, max(0, marcaPaletaCount - 1));
+  if (!marcaPaletaHexAtivo) {
+    marcaPaletaHexValor = hexMarca(marcaPaletaCores[marcaPaletaSlotSelecionado]);
+  }
+
+  float hexApplyW = min(76, w * 0.27);
+  float pasteW = min(68, w * 0.24);
+  marcaPaletaHexField[0] = x;
+  marcaPaletaHexField[1] = y;
+  marcaPaletaHexField[2] = w - hexApplyW - pasteW - gap * 2;
+  marcaPaletaHexField[3] = buttonH;
+  desenharCampoHexMarca(marcaPaletaHexField, marcaPaletaHexValor, marcaPaletaHexAtivo);
+
+  marcaPaletaPasteButton[0] = x + marcaPaletaHexField[2] + gap;
+  marcaPaletaPasteButton[1] = y;
+  marcaPaletaPasteButton[2] = pasteW;
+  marcaPaletaPasteButton[3] = buttonH;
+  desenharBotaoAcao(marcaPaletaPasteButton, "Colar");
+
+  marcaPaletaHexApplyButton[0] = marcaPaletaPasteButton[0] + pasteW + gap;
+  marcaPaletaHexApplyButton[1] = y;
+  marcaPaletaHexApplyButton[2] = hexApplyW;
+  marcaPaletaHexApplyButton[3] = buttonH;
+  desenharBotaoAcao(marcaPaletaHexApplyButton, "Aplicar");
+  y += buttonH + uiGapButton();
+
+  marcaPaletaAddButton[0] = x;
+  marcaPaletaAddButton[1] = y;
+  marcaPaletaAddButton[2] = w;
+  marcaPaletaAddButton[3] = buttonH;
+  desenharBotaoAcao(marcaPaletaAddButton, "+ Salvar cor no slot");
+  y += buttonH + uiGapButton();
+
+  float swatchGap = 7;
+  float swatchW = (w - swatchGap * 2) / 3.0;
+  float swatchH = constrain(height * 0.040, 26, 34);
+  for (int i = 0; i < marcaPaletaSlotButtons.length; i++) {
+    int col = i % 3;
+    int row = i / 3;
+    float bx = x + col * (swatchW + swatchGap);
+    float by = y + row * (swatchH + swatchGap);
+    marcaPaletaSlotButtons[i][0] = bx;
+    marcaPaletaSlotButtons[i][1] = by;
+    marcaPaletaSlotButtons[i][2] = swatchW;
+    marcaPaletaSlotButtons[i][3] = swatchH;
+
+    boolean liberado = i < marcaPaletaCount;
+    boolean ativo = liberado && marcaPaletaSlotSelecionado == i;
+    desenharBotaoAcaoEstado(marcaPaletaSlotButtons[i], liberado ? ("Cor " + (i + 1)) : "Bloq.", ativo);
+    noStroke();
+    int c = marcaPaletaCores[i];
+    fill(canalR(c), canalG(c), canalB(c), liberado ? canalA(c) : 46);
+    rect(bx + 8, by + 7, swatchW - 16, swatchH - 14, 4);
+  }
+  y += (swatchH + swatchGap) * 2 + uiGapButton();
+
+  return y + uiGapButton();
+}
+
+float desenharControlePaletaFundoPanfleto(float x, float y, float w, float buttonH, float labelSize) {
+  y = desenharSecaoLabel("Cor do fundo", x, y, labelSize);
+
+  panfletoFundoPaletaToggleButton[0] = x;
+  panfletoFundoPaletaToggleButton[1] = y;
+  panfletoFundoPaletaToggleButton[2] = w;
+  panfletoFundoPaletaToggleButton[3] = buttonH;
+  desenharBotaoAcaoEstado(panfletoFundoPaletaToggleButton, panfletoFundoPaletaTravada ? "Paleta ligada" : "Paleta desligada", panfletoFundoPaletaTravada);
+  y += buttonH + uiGapButton();
+
+  if (!panfletoFundoPaletaTravada) {
+    zerarBotao(panfletoFundoPaletaAddButton);
+    zerarBotao(panfletoFundoPaletaHexField);
+    zerarBotao(panfletoFundoPaletaHexApplyButton);
+    zerarBotao(panfletoFundoPaletaPasteButton);
+    zerarBotao(panfletoFundoPaletaCountMenuButton);
+    for (int i = 0; i < panfletoFundoPaletaCountButtons.length; i++) zerarBotao(panfletoFundoPaletaCountButtons[i]);
+    for (int i = 0; i < panfletoFundoPaletaSlotButtons.length; i++) zerarBotao(panfletoFundoPaletaSlotButtons[i]);
+    return y + uiGapButton();
+  }
+
+  float gap = 6;
+  float targetH = constrain(height * 0.035, 24, 30);
+  y = desenharSeletorQuantidadePaleta(x, y, w, targetH, panfletoFundoPaletaCount, 2, panfletoFundoPaletaCountMenuButton, panfletoFundoPaletaCountButtons);
+  y += uiGapButton();
+
+  panfletoFundoPaletaSlotSelecionado = constrain(panfletoFundoPaletaSlotSelecionado, 0, max(0, panfletoFundoPaletaCount - 1));
+  if (!panfletoFundoPaletaHexAtivo) {
+    panfletoFundoPaletaHexValor = hexMarca(panfletoFundoPaletaCores[panfletoFundoPaletaSlotSelecionado]);
+  }
+
+  float pasteW = 54;
+  float hexApplyW = 64;
+  panfletoFundoPaletaHexField[0] = x;
+  panfletoFundoPaletaHexField[1] = y;
+  panfletoFundoPaletaHexField[2] = w - hexApplyW - pasteW - gap * 2;
+  panfletoFundoPaletaHexField[3] = buttonH;
+  desenharCampoHexMarca(panfletoFundoPaletaHexField, panfletoFundoPaletaHexValor, panfletoFundoPaletaHexAtivo);
+
+  panfletoFundoPaletaPasteButton[0] = x + panfletoFundoPaletaHexField[2] + gap;
+  panfletoFundoPaletaPasteButton[1] = y;
+  panfletoFundoPaletaPasteButton[2] = pasteW;
+  panfletoFundoPaletaPasteButton[3] = buttonH;
+  desenharBotaoAcao(panfletoFundoPaletaPasteButton, "Colar");
+
+  panfletoFundoPaletaHexApplyButton[0] = panfletoFundoPaletaPasteButton[0] + pasteW + gap;
+  panfletoFundoPaletaHexApplyButton[1] = y;
+  panfletoFundoPaletaHexApplyButton[2] = hexApplyW;
+  panfletoFundoPaletaHexApplyButton[3] = buttonH;
+  desenharBotaoAcao(panfletoFundoPaletaHexApplyButton, "Aplicar");
+  y += buttonH + uiGapButton();
+
+  panfletoFundoPaletaAddButton[0] = x;
+  panfletoFundoPaletaAddButton[1] = y;
+  panfletoFundoPaletaAddButton[2] = w;
+  panfletoFundoPaletaAddButton[3] = buttonH;
+  desenharBotaoAcao(panfletoFundoPaletaAddButton, "+ Salvar cor no slot");
+  y += buttonH + uiGapButton();
+
+  float swatchGap = 6;
+  float swatchW = (w - swatchGap * 2) / 3.0;
+  float swatchH = constrain(height * 0.044, 30, 38);
+  for (int i = 0; i < panfletoFundoPaletaSlotButtons.length; i++) {
+    int col = i % 3;
+    int row = i / 3;
+    float bx = x + col * (swatchW + swatchGap);
+    float by = y + row * (swatchH + swatchGap);
+    panfletoFundoPaletaSlotButtons[i][0] = bx;
+    panfletoFundoPaletaSlotButtons[i][1] = by;
+    panfletoFundoPaletaSlotButtons[i][2] = swatchW;
+    panfletoFundoPaletaSlotButtons[i][3] = swatchH;
+
+    boolean liberado = i < panfletoFundoPaletaCount;
+    boolean ativo = liberado && panfletoFundoPaletaSlotSelecionado == i;
+    desenharBotaoAcaoEstado(panfletoFundoPaletaSlotButtons[i], liberado ? ("Cor " + (i + 1)) : "Bloq.", ativo);
+    int c = panfletoFundoPaletaCores[i];
+    noStroke();
+    fill(canalR(c), canalG(c), canalB(c), liberado ? 245 : 62);
+    rect(bx + 8, by + swatchH - 11, swatchW - 16, 4, 2);
+  }
+  y += (swatchH + swatchGap) * 2 + uiGapButton();
+
+  return y + uiGapButton();
+}
+
+float desenharSeletorQuantidadePaleta(float x, float y, float w, float h, int quantidadeAtual, int targetId, float[] menuButton, float[][] optionButtons) {
+  menuButton[0] = x;
+  menuButton[1] = y;
+  menuButton[2] = w;
+  menuButton[3] = h;
+  boolean aberto = paletaPopoverAberto && paletaPopoverTarget == targetId;
+  desenharBotaoAcaoEstado(menuButton, quantidadeAtual + " cores", aberto);
+  desenharSetaDropdown(menuButton, aberto);
+  y += h;
+
+  for (int i = 0; i < optionButtons.length; i++) {
+    zerarBotao(optionButtons[i]);
+  }
+  if (!aberto) {
+    return y;
+  }
+
+  float gap = 6;
+  float optionX = x;
+  float optionY = y + gap;
+  float optionW = w;
+  float optionH = h;
+  float totalH = optionH * optionButtons.length + gap * (optionButtons.length - 1);
+
+  noStroke();
+  fill(UI_LIGHT);
+  rect(uiSnap(optionX), uiSnap(optionY - 2), uiSnap(optionW), uiSnap(totalH + 4), 6);
+  stroke(UI_DARK);
+  noFill();
+  rect(uiSnap(optionX), uiSnap(optionY - 2), uiSnap(optionW), uiSnap(totalH + 4), 6);
+  noStroke();
+
+  for (int i = 0; i < optionButtons.length; i++) {
+    float by = optionY + i * (optionH + gap);
+    optionButtons[i][0] = optionX + 4;
+    optionButtons[i][1] = by;
+    optionButtons[i][2] = optionW - 8;
+    optionButtons[i][3] = optionH;
+    int qtd = i + 3;
+    desenharBotaoAcaoEstado(optionButtons[i], qtd + " cores", quantidadeAtual == qtd);
+  }
+  return optionY + totalH;
+}
+
+void desenharSetaDropdown(float[] buttonData, boolean aberto) {
+  float bx = uiSnap(buttonData[0]);
+  float by = uiSnap(buttonData[1]);
+  float bw = uiSnap(buttonData[2]);
+  float bh = uiSnap(buttonData[3]);
+  float cx = bx + bw - 18;
+  float cy = by + bh * 0.5;
+  float halfW = 5;
+  float halfH = 3;
+
+  stroke(aberto ? UI_LIGHT : UI_DARK);
+  strokeWeight(1.8);
+  noFill();
+  line(uiSnap(cx - halfW), uiSnap(cy - halfH), uiSnap(cx), uiSnap(cy + halfH));
+  line(uiSnap(cx), uiSnap(cy + halfH), uiSnap(cx + halfW), uiSnap(cy - halfH));
+  noStroke();
+}
+
+void desenharCampoHexMarca(float[] campo, String valor, boolean ativo) {
+  float x = campo[0];
+  float y = campo[1];
+  float w = campo[2];
+  float h = campo[3];
+  stroke(ativo ? UI_GREEN : UI_DARK);
+  fill(UI_LIGHT);
+  rect(x, y, w, h, 6);
+  noStroke();
+  fill(UI_DARK);
+  textAlign(LEFT, CENTER);
+  textSize(constrain(height * 0.014, 10, 12));
+  String exibido = (valor == null || valor.length() == 0) ? "#RRGGBB" : valor.toUpperCase();
+  if (ativo && (frameCount / 28) % 2 == 0) exibido += "|";
+  text(exibido, x + 10, y + h * 0.5);
+}
+
+void desenharFaixaCorMarca(int tipo, float[] s, float hueBase, float satBase, float briBase) {
+  float sx = s[0];
+  float sy = s[1] + 6;
+  float sw = larguraTrilhoSlider(s[2]);
+  desenharFaixaColoridaCache(0, tipo, sx, sy, sw, 5, hueBase, satBase, briBase);
+}
+
+float larguraTrilhoSlider(float sw) {
+  float valueW = 58;
+  return max(24, sw - valueW - 12);
+}
+
+void desenharSliderHsvUnico(float[] s, String label, int decimals, int tipo, float hueBase, float satBase, float briBase) {
+  pushStyle();
+  blendMode(BLEND);
+  noTint();
+  colorMode(RGB, 255);
+
+  float sx = s[0];
+  float sy = s[1];
+  float sw = s[2];
+  float mn = s[3];
+  float mx = s[4];
+  float val = s[5];
+  float t = constrain((val - mn) / max(0.0001, mx - mn), 0, 1);
+  float trackW = larguraTrilhoSlider(sw);
+  float trackY = sy + 8;
+  boolean hover = mouseX >= sx && mouseX <= sx + trackW && mouseY >= trackY - 8 && mouseY <= trackY + 12;
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  String labelUi = rotuloInterface(label);
+  float sliderLabelSize = tamanhoTextoParaCaber(labelUi, constrain(height * 0.0145, 10.5, 12.2), 9.5, trackW);
+  textSize(uiTextSize(sliderLabelSize));
+  text(textoComReticencias(labelUi, trackW, sliderLabelSize), uiSnap(sx), uiSnap(sy - 16));
+
+  fill(UI_DARK);
+  textAlign(RIGHT, TOP);
+  textSize(uiTextSize(constrain(height * 0.0128, 9.3, 11.2)));
+  text(nf(val, 1, decimals), uiSnap(sx + sw), uiSnap(sy - 16));
+
+  desenharTrilhoHsvDireto(tipo, uiSnap(sx), uiSnap(trackY), uiSnap(trackW), 5, hueBase, satBase, briBase);
+
+  stroke(UI_DARK);
+  strokeWeight(1);
+  fill(UI_LIGHT);
+  ellipse(uiSnap(sx + trackW * t), uiSnap(trackY + 2.5), hover ? 13 : 11, hover ? 13 : 11);
+
+  noStroke();
+  noTint();
+  blendMode(BLEND);
+  colorMode(RGB, 255);
+  popStyle();
+}
+
+void desenharTrilhoHsvDireto(int tipo, float x, float y, float w, float h, float hueBase, float satBase, float briBase) {
+  pushStyle();
+  noStroke();
+
+  if (tipo == 3) {
+    colorMode(RGB, 255);
+    int blocos = max(8, int(w / 8));
+    for (int i = 0; i < blocos; i++) {
+      int c = (i % 2 == 0) ? UI_DARK : UI_BROWN;
+      fill(canalR(c), canalG(c), canalB(c));
+      rect(x + i * (w / blocos), y, ceil(w / blocos) + 1, h);
+    }
+  }
+
+  colorMode(HSB, 360, 100, 100, 100);
+  int passos = max(12, int(w));
+  for (int i = 0; i < passos; i++) {
+    float p = i / max(1.0, passos - 1.0);
+    if (tipo == 0) {
+      fill(p * 360.0, 90, 95, 100);
+    } else if (tipo == 1) {
+      fill(hueBase, p * 100.0, briBase, 100);
+    } else if (tipo == 2) {
+      fill(hueBase, satBase, p * 100.0, 100);
+    } else {
+      fill(hueBase, satBase, briBase, p * 100.0);
+    }
+    rect(x + i * (w / passos), y, ceil(w / passos) + 1, h);
+  }
+
+  colorMode(RGB, 255);
+  popStyle();
+}
+
+void desenharFaixaColoridaCache(int grupoBase, int tipo, float x, float y, float w, float h, float hueBase, float satBase, float briBase) {
+  int idx = constrain(grupoBase + tipo, 0, uiHsvStripCaches.length - 1);
+  int rw = max(24, round(w));
+  int rh = max(3, round(h));
+  String key = idx + "|" + rw + "|" + rh + "|" + round(hueBase * 10) + "|" + round(satBase * 10) + "|" + round(briBase * 10);
+  if (uiHsvStripCaches[idx] == null || uiHsvStripCacheKeys[idx] == null || !uiHsvStripCacheKeys[idx].equals(key)) {
+    uiHsvStripCacheKeys[idx] = key;
+    uiHsvStripCaches[idx] = createGraphics(rw, rh, P2D);
+    PGraphics pg = uiHsvStripCaches[idx];
+    pg.beginDraw();
+    pg.clear();
+    if (tipo == 0) desenharFaixaMatizCompleta(pg, rw, rh);
+    if (tipo == 1) desenharFaixaSaturacaoCompleta(pg, rw, rh, hueBase, briBase);
+    if (tipo == 2) desenharFaixaLuminosidadeCompleta(pg, rw, rh, hueBase, satBase);
+    if (tipo == 3) desenharFaixaAlphaCompleta(pg, rw, rh, hueBase, satBase, briBase);
+    pg.endDraw();
+  }
+  imageMode(CORNER);
+  image(uiHsvStripCaches[idx], uiSnap(x), uiSnap(y));
+}
+
+void desenharFaixaMatizCompleta(PGraphics pg, float w, float h) {
+  pg.colorMode(HSB, 360, 100, 100, 100);
+  pg.noStroke();
+  int passos = max(12, int(w));
+  for (int i = 0; i < passos; i++) {
+    float hVal = map(i, 0, passos - 1, 0, 360);
+    pg.fill(hVal, 90, 95, 100);
+    pg.rect(i * (w / passos), 0, ceil(w / passos) + 1, h);
+  }
+  pg.colorMode(RGB, 255);
+}
+
+void desenharFaixaSaturacaoCompleta(PGraphics pg, float w, float h, float hueBase, float briBase) {
+  pg.colorMode(HSB, 360, 100, 100, 100);
+  pg.noStroke();
+  int passos = max(12, int(w));
+  for (int i = 0; i < passos; i++) {
+    float satVal = map(i, 0, passos - 1, 0, 100);
+    pg.fill(hueBase, satVal, briBase, 100);
+    pg.rect(i * (w / passos), 0, ceil(w / passos) + 1, h);
+  }
+  pg.colorMode(RGB, 255);
+}
+
+void desenharFaixaLuminosidadeCompleta(PGraphics pg, float w, float h, float hueBase, float satBase) {
+  pg.colorMode(HSB, 360, 100, 100, 100);
+  pg.noStroke();
+  int passos = max(12, int(w));
+  for (int i = 0; i < passos; i++) {
+    float briVal = map(i, 0, passos - 1, 0, 100);
+    pg.fill(hueBase, satBase, briVal, 100);
+    pg.rect(i * (w / passos), 0, ceil(w / passos) + 1, h);
+  }
+  pg.colorMode(RGB, 255);
+}
+
+void desenharFaixaAlphaCompleta(PGraphics pg, float w, float h, float hueBase, float satBase, float briBase) {
+  pg.noStroke();
+  int blocos = max(8, int(w / 8));
+  for (int i = 0; i < blocos; i++) {
+    int c = (i % 2 == 0) ? UI_DARK : UI_BROWN;
+    pg.fill(canalR(c), canalG(c), canalB(c));
+    pg.rect(i * (w / blocos), 0, ceil(w / blocos) + 1, h);
+  }
+  pg.colorMode(HSB, 360, 100, 100, 100);
+  int passos = max(12, int(w));
+  for (int i = 0; i < passos; i++) {
+    float alphaVal = map(i, 0, passos - 1, 0, 100);
+    pg.fill(hueBase, satBase, briBase, alphaVal);
+    pg.rect(i * (w / passos), 0, ceil(w / passos) + 1, h);
+  }
+  pg.colorMode(RGB, 255);
+}
+
+void desenharFaixaMatiz(float x, float y, float w, float h) {
+  noStroke();
+  for (int i = 0; i < 4; i++) {
+    int c = corInterfacePaleta(i);
+    fill(canalR(c), canalG(c), canalB(c));
+    rect(x + i * w / 4.0, y, w / 4.0 + 1, h);
+  }
+}
+
+void desenharFaixaSaturacao(float x, float y, float w, float h, float hueBase, float briBase) {
+  noStroke();
+  for (int i = 0; i < 4; i++) {
+    int c = corInterfacePaleta(i);
+    fill(canalR(c), canalG(c), canalB(c), 70 + i * 45);
+    rect(x + i * w / 4.0, y, w / 4.0 + 1, h);
+  }
+}
+
+void desenharFaixaLuminosidade(float x, float y, float w, float h, float hueBase, float satBase) {
+  noStroke();
+  for (int i = 0; i < 4; i++) {
+    int c = corInterfacePaleta(i);
+    fill(canalR(c), canalG(c), canalB(c));
+    rect(x + i * w / 4.0, y, w / 4.0 + 1, h);
+  }
+}
+
+void desenharFaixaAlpha(float x, float y, float w, float h, float hueBase, float satBase, float briBase) {
+  noStroke();
+  int blocos = max(8, int(w / 8));
+  for (int i = 0; i < blocos; i++) {
+    int c = (i % 2 == 0) ? UI_DARK : UI_BROWN;
+    fill(canalR(c), canalG(c), canalB(c));
+    rect(x + i * (w / blocos), y, ceil(w / blocos) + 1, h);
+  }
+  int passos = max(12, int(w));
+  for (int i = 0; i < passos; i++) {
+    float alphaVal = map(i, 0, passos - 1, 0, 100);
+    int c = corInterfacePaletaPorT(float(i) / max(1, passos - 1));
+    fill(canalR(c), canalG(c), canalB(c), alphaVal);
+    rect(x + i * (w / passos), y, ceil(w / passos) + 1, h);
+  }
+}
+
+void zerarSliderDesign(int idx) {
+  if (idx < 0 || idx >= designParamSliders.length) return;
+  for (int j = 0; j < designParamSliders[idx].length; j++) {
+    designParamSliders[idx][j] = 0;
+  }
+}
+
+float desenharPainelExportDireito(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Resumo", x, y, titleSize);
+  y = desenharSecaoLabel("Canvas atual", x, y, labelSize);
+  String modulo = appPage == 2 ? "Panfleto" : (appPage == 3 ? "Estampa" : "Marca");
+  y = desenharInfoCompacta("Módulo", modulo, x, y, w);
+  y = desenharInfoCompacta("Formato", appPage == 2 ? panfletoFormatoLabels[panfletoFormatoAtivo] : nf(width, 0, 0) + "x" + nf(height, 0, 0), x, y, w);
+  y = desenharInfoCompacta("Marca", activeBrand != null ? activeBrand.name : "nenhuma", x, y, w);
+  y += 12;
+  y = desenharSecaoLabel("Estado", x, y, labelSize);
+  y = desenharInfoCompacta("Congelamento", mutationParams != null && mutationParams.freezeState ? "ativo" : "livre", x, y, w);
+  y = desenharInfoCompacta("MP4", videoRecording ? "capturando" : (videoEncoding ? "gerando" : "pronto"), x, y, w);
+  return y + 24;
+}
+
+float desenharPainelEstampaDireito(float x, float y, float w, float buttonH, float labelSize, float titleSize) {
+  y = desenharTituloPainel("Estampa", x, y, titleSize);
+  y = desenharSecaoLabel("Cor da estampa", x, y, labelSize);
+  y = desenharControleCorEstampa(x, y, w, buttonH);
+  y += 18;
+
+  y = desenharSecaoLabel("Sistema visual", x, y, labelSize);
+
+  for (int i = 0; i < padraoSliderVisivel.length; i++) padraoSliderVisivel[i] = true;
+  float step = constrain(height * 0.055, 36, 44);
+  float[][] ranges = {
+    { 3, 26 },
+    { 40, 280 },
+    { 36, 240 },
+    { 0.10, 1.05 },
+    { -360, 360 },
+    { -300, 300 },
+    { -260, 260 }
+  };
+  for (int i = 0; i < padraoSliders.length; i++) {
+    padraoSliders[i][0] = x;
+    padraoSliders[i][1] = y;
+    padraoSliders[i][2] = w;
+    padraoSliders[i][3] = ranges[i][0];
+    padraoSliders[i][4] = ranges[i][1];
+    if (i == 0) padraoSliders[i][5] = padraoQtdFormas;
+    if (i == 1) padraoSliders[i][5] = padraoEspacoX;
+    if (i == 2) padraoSliders[i][5] = padraoEspacoY;
+    if (i == 3) padraoSliders[i][5] = padraoEscala;
+    if (i == 4) padraoSliders[i][5] = padraoRefX;
+    if (i == 5) padraoSliders[i][5] = padraoRefY;
+    if (i == 6) padraoSliders[i][5] = padraoDiagonal;
+    desenharSliderPadrao(i);
+    y += step;
+  }
+
+  y += 22;
+  y = desenharSecaoLabel("Linguagem generativa", x, y, labelSize);
+  float gap = 8;
+  float smallH = constrain(height * 0.040, 27, 34);
+  float bw = (w - gap) * 0.5;
+  for (int i = 0; i < padraoFormaButtons.length; i++) zerarBotao(padraoFormaButtons[i]);
+  int totalModosEstampa = estampaModoIndices.length;
+  for (int i = 0; i < totalModosEstampa; i++) {
+    int modoReal = estampaModoIndices[i];
+    int col = i % 2;
+    int row = i / 2;
+    padraoFormaButtons[i][0] = x + col * (bw + gap);
+    padraoFormaButtons[i][1] = y + row * (smallH + gap);
+    padraoFormaButtons[i][2] = (i == totalModosEstampa - 1 && totalModosEstampa % 2 == 1) ? w : bw;
+    padraoFormaButtons[i][3] = smallH;
+    desenharBotaoAcaoEstado(padraoFormaButtons[i], estampaModoLabels[modoReal], formaPadraoAtiva == modoReal);
+  }
+  y += (smallH + gap) * ceil(totalModosEstampa / 2.0f) + 22;
+  return y;
+}
+
+float desenharControleCorEstampa(float x, float y, float w, float buttonH) {
+  estampaCoresMarcaButton[0] = x;
+  estampaCoresMarcaButton[1] = y;
+  estampaCoresMarcaButton[2] = w;
+  estampaCoresMarcaButton[3] = buttonH;
+  String labelModoCor = estampaGradienteAtivo() ? "3 cores do gradiente" : (estampaUsarCoresMarca ? "Cores da marca" : "Cores manuais");
+  desenharBotaoAcaoEstado(estampaCoresMarcaButton, labelModoCor, estampaGradienteAtivo() || estampaUsarCoresMarca);
+  y += buttonH + 12;
+
+  float gap = 8;
+  float btnH = constrain(height * 0.038, 26, 32);
+  float btnW = (w - gap * 2) / 3.0;
+  for (int i = 0; i < estampaColorButtons.length; i++) {
+    estampaColorButtons[i][0] = x + i * (btnW + gap);
+    estampaColorButtons[i][1] = y;
+    estampaColorButtons[i][2] = btnW;
+    estampaColorButtons[i][3] = btnH;
+    desenharBotaoAcaoEstado(estampaColorButtons[i], labelCorEstampa(i), estampaColorTarget == i);
+    int c = corAtualEstampa(i);
+    noStroke();
+    fill(canalR(c), canalG(c), canalB(c), canalA(c));
+    rect(estampaColorButtons[i][0] + 7, y + 7, 12, btnH - 14, 3);
+  }
+  y += btnH + 32;
+
+  float[] hsv = hsvAtualEstampa();
+  float[] hsvMin = { 0, 0, 0, 0 };
+  float[] hsvMax = { 360, 100, 100, 100 };
+  float step = constrain(height * 0.055, 36, 44);
+  float hsvStartY = y;
+  for (int i = 0; i < estampaHsvSliders.length; i++) {
+    estampaHsvSliders[i][0] = x;
+    estampaHsvSliders[i][1] = y;
+    estampaHsvSliders[i][2] = max(40, w - 44);
+    estampaHsvSliders[i][3] = hsvMin[i];
+    estampaHsvSliders[i][4] = hsvMax[i];
+    estampaHsvSliders[i][5] = hsv[i];
+    desenharSliderHsvUnico(estampaHsvSliders[i], estampaHsvLabels[i], i == 0 ? 0 : 1, i, hsv[0], hsv[1], hsv[2]);
+    y += step;
+  }
+  int c = corAtualEstampa(estampaColorTarget);
+  colorMode(RGB, 255);
+  stroke(UI_DARK);
+  strokeWeight(1);
+  fill(canalR(c), canalG(c), canalB(c), canalA(c));
+  rect(uiSnap(x + w - 28), uiSnap(hsvStartY - 18), 28, 18, 5);
+  noStroke();
+  return y + 8;
+}
+
+void desenharFaixaCorEstampa(int tipo, float[] s, float hueBase, float satBase) {
+  float sx = s[0];
+  float sy = s[1] + 6;
+  float sw = larguraTrilhoSlider(s[2]);
+  float brilhoBase = (tipo == 1) ? 100 : estampaHsvSliders[2][5];
+  desenharFaixaColoridaCache(4, tipo, sx, sy, sw, 5, hueBase, satBase, brilhoBase);
+}
+
+void desenharSliderUi(float sx, float sy, float sw, float mn, float mx, float val, String label, int decimals) {
+  float t = constrain((val - mn) / max(0.0001, mx - mn), 0, 1);
+  float valueW = 58;
+  float trackY = sy + 8;
+  float trackW = larguraTrilhoSlider(sw);
+  boolean hover = mouseX >= sx && mouseX <= sx + trackW && mouseY >= trackY - 8 && mouseY <= trackY + 12;
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  String labelUi = rotuloInterface(label);
+  float sliderLabelSize = tamanhoTextoParaCaber(labelUi, constrain(height * 0.0145, 10.5, 12.2), 9.5, trackW);
+  textSize(uiTextSize(sliderLabelSize));
+  text(textoComReticencias(labelUi, trackW, sliderLabelSize), uiSnap(sx), uiSnap(sy - 16));
+
+  fill(UI_DARK);
+  textAlign(RIGHT, TOP);
+  textSize(uiTextSize(constrain(height * 0.0128, 9.3, 11.2)));
+  text(nf(val, 1, decimals), uiSnap(sx + sw), uiSnap(sy - 16));
+
+  noStroke();
+  fill(UI_DARK);
+  rect(uiSnap(sx), uiSnap(trackY), uiSnap(trackW), 4, 2);
+  fill(UI_GREEN);
+  rect(uiSnap(sx), uiSnap(trackY), uiSnap(trackW * t), 4, 2);
+  stroke(UI_DARK);
+  strokeWeight(1);
+  fill(UI_LIGHT);
+  ellipse(uiSnap(sx + trackW * t), uiSnap(trackY + 2), hover ? 13 : 11, hover ? 13 : 11);
+  noStroke();
+}
+
+void desenharSliderGenerico(float[] s, String label, int decimals) {
+  float sx = s[0];
+  float sy = s[1];
+  float sw = s[2];
+  float mn = s[3];
+  float mx = s[4];
+  float val = s[5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, label, decimals);
+}
+
+void desenharColorPicker() {
+  if (!colorPickerAberto) return;
+  colorMode(RGB, 255);
+
+  float boxW = min(360, width * 0.42);
+  float boxH = min(390, height * 0.64);
+  float boxX = width * 0.5 - boxW * 0.5;
+  float boxY = height * 0.5 - boxH * 0.5;
+
+  noStroke();
+  fill(UI_DARK);
+  rect(0, 0, width, height);
+  fill(UI_LIGHT);
+  rect(boxX, boxY, boxW, boxH, 8);
+  stroke(UI_DARK);
+  noFill();
+  rect(boxX, boxY, boxW, boxH, 8);
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  textSize(15);
+  text(rotuloInterface("Janela de cores") + " - " + rotuloInterface(labelCorEstampa(colorPickerTarget)), boxX + 18, boxY + 16);
+
+  colorPickerArea[0] = boxX + 18;
+  colorPickerArea[1] = boxY + 52;
+  colorPickerArea[2] = boxW - 36;
+  colorPickerArea[3] = boxH - 150;
+
+  int cols = 32;
+  int rows = 22;
+  float cw = colorPickerArea[2] / cols;
+  float ch = colorPickerArea[3] / rows;
+  noStroke();
+  for (int gy = 0; gy < rows; gy++) {
+    for (int gx = 0; gx < cols; gx++) {
+      float s = gx / float(max(1, cols - 1));
+      float b = 1.0 - gy / float(max(1, rows - 1));
+      int c = java.awt.Color.HSBtoRGB(colorPickerHue, s, b);
+      fill((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+      rect(colorPickerArea[0] + gx * cw, colorPickerArea[1] + gy * ch, cw + 0.5, ch + 0.5);
+    }
+  }
+  stroke(UI_DARK);
+  strokeWeight(1.5);
+  float pickX = colorPickerArea[0] + colorPickerSat * colorPickerArea[2];
+  float pickY = colorPickerArea[1] + (1.0 - colorPickerBri) * colorPickerArea[3];
+  noFill();
+  ellipse(pickX, pickY, 12, 12);
+
+  colorPickerHueArea[0] = boxX + 18;
+  colorPickerHueArea[1] = colorPickerArea[1] + colorPickerArea[3] + 18;
+  colorPickerHueArea[2] = boxW - 36;
+  colorPickerHueArea[3] = 18;
+  noStroke();
+  for (int i = 0; i < 96; i++) {
+    float h = i / 95.0;
+    int c = java.awt.Color.HSBtoRGB(h, 1, 1);
+    fill((c >> 16) & 0xFF, (c >> 8) & 0xFF, c & 0xFF);
+    rect(colorPickerHueArea[0] + i * colorPickerHueArea[2] / 96.0, colorPickerHueArea[1], colorPickerHueArea[2] / 96.0 + 1, colorPickerHueArea[3]);
+  }
+  fill(UI_DARK);
+  rect(colorPickerHueArea[0] + colorPickerHue * colorPickerHueArea[2] - 1, colorPickerHueArea[1] - 3, 2, colorPickerHueArea[3] + 6);
+
+  int preview = java.awt.Color.HSBtoRGB(colorPickerHue, colorPickerSat, colorPickerBri);
+  fill((preview >> 16) & 0xFF, (preview >> 8) & 0xFF, preview & 0xFF);
+  rect(boxX + 18, boxY + boxH - 56, 54, 34, 5);
+
+  colorPickerCancelButton[0] = boxX + boxW - 178;
+  colorPickerCancelButton[1] = boxY + boxH - 56;
+  colorPickerCancelButton[2] = 76;
+  colorPickerCancelButton[3] = 34;
+  colorPickerOkButton[0] = boxX + boxW - 94;
+  colorPickerOkButton[1] = boxY + boxH - 56;
+  colorPickerOkButton[2] = 76;
+  colorPickerOkButton[3] = 34;
+  desenharBotaoAcao(colorPickerCancelButton, "Cancelar");
+  desenharBotaoAcao(colorPickerOkButton, "Aplicar");
+}
+
+float desenharSecaoPanfleto(float innerX, float y, float trackWidth, float buttonH, float labelSize) {
+  float sectionGap = uiGapSection();
+  float rowGap = uiGapDividerTitle();
+  float sliderStep = constrain(height * 0.060, 40, 50);
+  for (int i = 0; i < designParamSliders.length; i++) zerarSliderDesign(i);
+  for (int i = 0; i < panfletoEstampaSliders.length; i++) zerarSliderPanfletoEstampa(i);
+
+  y = desenharSecaoLabel("Layout", innerX, y, labelSize);
+
+  float gap = 6;
+  float layoutW = (trackWidth - gap) * 0.5;
+  float layoutH = constrain(height * 0.036, 24, 30);
+  for (int i = 0; i < panfletoLayoutButtons.length; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    panfletoLayoutButtons[i][0] = innerX + col * (layoutW + gap);
+    panfletoLayoutButtons[i][1] = y + row * (layoutH + gap);
+    panfletoLayoutButtons[i][2] = layoutW;
+    panfletoLayoutButtons[i][3] = layoutH;
+    desenharBotaoAcaoEstado(panfletoLayoutButtons[i], panfletoLayoutLabels[i], panfletoLayoutAtivo == i);
+  }
+  y += layoutH * ceil(panfletoLayoutButtons.length / 2.0f) + gap * max(0, ceil(panfletoLayoutButtons.length / 2.0f) - 1) + sectionGap;
+
+  y = desenharSecaoLabel("Objetos do layout", innerX, y, labelSize);
+  float formaW = (trackWidth - gap) * 0.5;
+  for (int i = 0; i < panfletoObjetoFormaButtons.length; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    panfletoObjetoFormaButtons[i][0] = innerX + col * (formaW + gap);
+    panfletoObjetoFormaButtons[i][1] = y + row * (layoutH + gap);
+    panfletoObjetoFormaButtons[i][2] = (i == panfletoObjetoFormaButtons.length - 1) ? trackWidth : formaW;
+    panfletoObjetoFormaButtons[i][3] = layoutH;
+    desenharBotaoAcaoEstado(panfletoObjetoFormaButtons[i], panfletoObjetoFormaLabels[i], panfletoObjetoForma == i);
+  }
+  y += layoutH * ceil(panfletoObjetoFormaButtons.length / 2.0f) + gap * max(0, ceil(panfletoObjetoFormaButtons.length / 2.0f) - 1) + uiGapTitleContent();
+
+  float qtdGap = 5;
+  float qtdW = (trackWidth - qtdGap * max(0, panfletoObjetoQuantidadeButtons.length - 1)) / float(max(1, panfletoObjetoQuantidadeButtons.length));
+  for (int i = 0; i < panfletoObjetoQuantidadeButtons.length; i++) {
+    panfletoObjetoQuantidadeButtons[i][0] = innerX + i * (qtdW + qtdGap);
+    panfletoObjetoQuantidadeButtons[i][1] = y;
+    panfletoObjetoQuantidadeButtons[i][2] = qtdW;
+    panfletoObjetoQuantidadeButtons[i][3] = layoutH;
+    desenharBotaoAcaoEstado(panfletoObjetoQuantidadeButtons[i], str(i + 1), panfletoObjetoQuantidade == i + 1);
+  }
+  y += layoutH + sectionGap;
+
+  y = desenharSecaoLabel("Formato", innerX, y, labelSize);
+
+  float formatoW = (trackWidth - gap) * 0.5;
+  float formatoH = constrain(height * 0.036, 24, 30);
+  for (int i = 0; i < panfletoFormatoButtons.length; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    panfletoFormatoButtons[i][0] = innerX + col * (formatoW + gap);
+    panfletoFormatoButtons[i][1] = y + row * (formatoH + gap);
+    panfletoFormatoButtons[i][2] = formatoW;
+    panfletoFormatoButtons[i][3] = formatoH;
+    desenharBotaoAcaoEstado(panfletoFormatoButtons[i], panfletoFormatoLabels[i], panfletoFormatoAtivo == i);
+  }
+  y += formatoH * ceil(panfletoFormatoButtons.length / 2.0f) + gap * max(0, ceil(panfletoFormatoButtons.length / 2.0f) - 1) + sectionGap;
+
+  y = desenharControlePaletaFundoPanfleto(innerX, y, trackWidth, buttonH, labelSize);
+  y += sectionGap;
+
+  y = desenharSecaoLabel("Imagem de fundo", innerX, y, labelSize);
+
+  panfletoFotoAddButton[0] = innerX;
+  panfletoFotoAddButton[1] = y;
+  panfletoFotoAddButton[2] = trackWidth;
+  panfletoFotoAddButton[3] = formatoH;
+  desenharBotaoAcao(panfletoFotoAddButton, "Adicionar foto/fundo");
+  y += formatoH + rowGap;
+
+  panfletoMidiaAddButton[0] = innerX;
+  panfletoMidiaAddButton[1] = y;
+  panfletoMidiaAddButton[2] = trackWidth;
+  panfletoMidiaAddButton[3] = formatoH;
+  desenharBotaoAcao(panfletoMidiaAddButton, "Adicionar GIF/vídeo");
+  y += formatoH + rowGap;
+
+  panfletoFotoLimparButton[0] = innerX;
+  panfletoFotoLimparButton[1] = y;
+  panfletoFotoLimparButton[2] = trackWidth;
+  panfletoFotoLimparButton[3] = formatoH;
+  desenharBotaoAcao(panfletoFotoLimparButton, "Remover fundo");
+  y += formatoH + rowGap;
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  textSize(constrain(height * 0.0135, 10, 12));
+  String fotoInfo = (panfletoMidiaFrames != null && panfletoMidiaFrames.length > 0) ?
+    "Mídia: " + panfletoMidiaTipo + " / " + panfletoMidiaFrames.length + " frames" :
+    ((fotoEditorialPanfleto() != null) ? "Foto: " + fotoEditorialPanfleto().width + "x" + fotoEditorialPanfleto().height : "Foto: nenhuma");
+  text(rotuloInterface(fotoInfo), innerX, y);
+  y += sectionGap;
+
+  y = desenharSecaoLabel("Marca", innerX, y, labelSize);
+
+  for (int i = 0; i < panfletoMarcaSliders.length; i++) {
+    panfletoMarcaSliders[i][0] = innerX;
+    panfletoMarcaSliders[i][1] = y;
+    panfletoMarcaSliders[i][2] = trackWidth;
+    if (i == 0) {
+      panfletoMarcaSliders[i][3] = -380;
+      panfletoMarcaSliders[i][4] = 380;
+      panfletoMarcaSliders[i][5] = panfletoMarcaX;
+    } else if (i == 1) {
+      panfletoMarcaSliders[i][3] = -380;
+      panfletoMarcaSliders[i][4] = 380;
+      panfletoMarcaSliders[i][5] = panfletoMarcaY;
+    } else {
+      panfletoMarcaSliders[i][3] = 0.25;
+      panfletoMarcaSliders[i][4] = 9.0;
+      panfletoMarcaSliders[i][5] = panfletoMarcaEscala;
+    }
+    desenharSliderPanfletoMarca(i);
+    y += sliderStep;
+  }
+
+  if (mutationParams != null) {
+    float[] marcaBasicos = {
+      mutationParams.deformationAmount,
+      mutationParams.strokeAmount,
+      mutationParams.opacityAmount
+    };
+    float[][] marcaRanges = {
+      { 0, 140 },
+      { 0.4, 12 },
+      { 0.05, 1.0 }
+    };
+    String[] marcaLabels = { "Deformação", "Peso visual", "Opacidade" };
+    int[] paramIdx = { 1, 4, 16 };
+    for (int j = 0; j < marcaBasicos.length; j++) {
+      int idx = paramIdx[j];
+      designParamSliders[idx][0] = innerX;
+      designParamSliders[idx][1] = y;
+      designParamSliders[idx][2] = trackWidth;
+      designParamSliders[idx][3] = marcaRanges[j][0];
+      designParamSliders[idx][4] = marcaRanges[j][1];
+      designParamSliders[idx][5] = marcaBasicos[j];
+      desenharSliderGenerico(designParamSliders[idx], marcaLabels[j], j == 1 || j == 2 ? 2 : 1);
+      y += sliderStep;
+    }
+  }
+
+  panfletoLogoExtraToggleButton[0] = innerX;
+  panfletoLogoExtraToggleButton[1] = y;
+  panfletoLogoExtraToggleButton[2] = trackWidth;
+  panfletoLogoExtraToggleButton[3] = formatoH;
+  desenharBotaoAcaoEstado(panfletoLogoExtraToggleButton, panfletoLogoExtraAtiva ? "Segunda logo reativa ligada" : "+ Segunda logo reativa", panfletoLogoExtraAtiva);
+  y += formatoH + rowGap;
+
+  if (panfletoLogoExtraAtiva) {
+    for (int i = 0; i < panfletoLogoExtraSliders.length; i++) {
+      panfletoLogoExtraSliders[i][0] = innerX;
+      panfletoLogoExtraSliders[i][1] = y;
+      panfletoLogoExtraSliders[i][2] = trackWidth;
+      if (i == 0) {
+        panfletoLogoExtraSliders[i][3] = -900;
+        panfletoLogoExtraSliders[i][4] = 900;
+        panfletoLogoExtraSliders[i][5] = panfletoLogoExtraX;
+      } else if (i == 1) {
+        panfletoLogoExtraSliders[i][3] = -900;
+        panfletoLogoExtraSliders[i][4] = 900;
+        panfletoLogoExtraSliders[i][5] = panfletoLogoExtraY;
+      } else {
+        panfletoLogoExtraSliders[i][3] = 0.12;
+        panfletoLogoExtraSliders[i][4] = 4.0;
+        panfletoLogoExtraSliders[i][5] = panfletoLogoExtraEscala;
+      }
+      desenharSliderPanfletoLogoExtra(i);
+      y += sliderStep;
+    }
+  }
+
+  y += sectionGap;
+  y = desenharSecaoLabel("Textos", innerX, y, labelSize);
+
+  panfletoTextoToggleButton[0] = innerX;
+  panfletoTextoToggleButton[1] = y;
+  panfletoTextoToggleButton[2] = trackWidth;
+  panfletoTextoToggleButton[3] = formatoH;
+  desenharBotaoAcaoEstado(panfletoTextoToggleButton, panfletoMostrarTextos ? "Textos ligados" : "Textos desligados", panfletoMostrarTextos);
+  y += formatoH + rowGap;
+
+  panfletoAgruparTextosButton[0] = innerX;
+  panfletoAgruparTextosButton[1] = y;
+  panfletoAgruparTextosButton[2] = trackWidth;
+  panfletoAgruparTextosButton[3] = formatoH;
+  desenharBotaoAcaoEstado(panfletoAgruparTextosButton, panfletoTextosAgrupados ? "Grupo de textos ligado" : "Grupo de textos desligado", panfletoTextosAgrupados);
+  y += formatoH + rowGap;
+
+  panfletoTextoAddButton[0] = innerX;
+  panfletoTextoAddButton[1] = y;
+  panfletoTextoAddButton[2] = trackWidth;
+  panfletoTextoAddButton[3] = formatoH;
+  desenharBotaoAcaoEstado(panfletoTextoAddButton, panfletoTextoExtraCount < 4 ? "+ Adicionar caixa de texto" : "Limite de textos extras", panfletoTextoExtraCount > 0);
+  y += formatoH + rowGap;
+
+  y = desenharSecaoLabel("Cor do texto", innerX, y, labelSize);
+  float corGap = 5;
+  float corBtnW = (trackWidth - corGap) * 0.5;
+  float corBtnH = formatoH;
+  for (int i = 0; i < panfletoTextoCorButtons.length; i++) {
+    int col = i % 2;
+    int row = i / 2;
+    panfletoTextoCorButtons[i][0] = innerX + col * (corBtnW + corGap);
+    panfletoTextoCorButtons[i][1] = y + row * (corBtnH + corGap);
+    panfletoTextoCorButtons[i][2] = corBtnW;
+    panfletoTextoCorButtons[i][3] = corBtnH;
+    desenharBotaoAcaoEstado(panfletoTextoCorButtons[i], panfletoTextoCorLabels[i], panfletoTextoCorModo == i);
+  }
+  y += corBtnH * ceil(panfletoTextoCorButtons.length / 2.0f) + corGap * max(0, ceil(panfletoTextoCorButtons.length / 2.0f) - 1) + rowGap;
+
+  float campoH = constrain(height * 0.044, 30, 38);
+  for (int i = 0; i < 6; i++) {
+    panfletoTextoCampos[i][0] = innerX;
+    panfletoTextoCampos[i][1] = y;
+    panfletoTextoCampos[i][2] = trackWidth;
+    panfletoTextoCampos[i][3] = campoH;
+    desenharCampoTextoPanfleto(i);
+    y += campoH + sectionGap;
+  }
+  for (int e = 0; e < panfletoTextoExtraCount; e++) {
+    int textoIdx = 6 + e;
+    int sizeIdx = 10 + e;
+    panfletoTextoCampos[textoIdx][0] = innerX;
+    panfletoTextoCampos[textoIdx][1] = y;
+    panfletoTextoCampos[textoIdx][2] = trackWidth;
+    panfletoTextoCampos[textoIdx][3] = campoH;
+    desenharCampoTextoPanfleto(textoIdx);
+    y += campoH + rowGap;
+
+    panfletoTextoCampos[sizeIdx][0] = innerX;
+    panfletoTextoCampos[sizeIdx][1] = y;
+    panfletoTextoCampos[sizeIdx][2] = trackWidth;
+    panfletoTextoCampos[sizeIdx][3] = campoH;
+    desenharCampoTextoPanfleto(sizeIdx);
+    y += campoH + sectionGap;
+  }
+
+  y += sectionGap;
+  y = desenharSecaoLabel(panfletoTextosAgrupados ? "Mover grupo de textos" : "Mover textos individualmente", innerX, y, labelSize);
+
+  if (panfletoTextosAgrupados) {
+    for (int i = 0; i < 6; i++) zerarSliderPanfletoTexto(i);
+    for (int i = 6; i < 8; i++) {
+      panfletoTextoSliders[i][0] = innerX;
+      panfletoTextoSliders[i][1] = y;
+      panfletoTextoSliders[i][2] = trackWidth;
+      panfletoTextoSliders[i][3] = -1600;
+      panfletoTextoSliders[i][4] = 1600;
+      if (i == 6) panfletoTextoSliders[i][5] = panfletoTextoGrupoY;
+      if (i == 7) panfletoTextoSliders[i][5] = panfletoTextoGrupoX;
+      desenharSliderPanfletoTexto(i);
+      y += sliderStep;
+    }
+  } else {
+    for (int i = 6; i < panfletoTextoSliders.length; i++) zerarSliderPanfletoTexto(i);
+    for (int i = 0; i < 6; i++) {
+      panfletoTextoSliders[i][0] = innerX;
+      panfletoTextoSliders[i][1] = y;
+      panfletoTextoSliders[i][2] = trackWidth;
+      panfletoTextoSliders[i][3] = -1600;
+      panfletoTextoSliders[i][4] = 1600;
+      if (i == 0) panfletoTextoSliders[i][5] = panfletoTituloY;
+      if (i == 1) panfletoTextoSliders[i][5] = panfletoTituloX;
+      if (i == 2) panfletoTextoSliders[i][5] = panfletoSubtituloY;
+      if (i == 3) panfletoTextoSliders[i][5] = panfletoSubtituloX;
+      if (i == 4) panfletoTextoSliders[i][5] = panfletoRodapeY;
+      if (i == 5) panfletoTextoSliders[i][5] = panfletoRodapeX;
+      desenharSliderPanfletoTexto(i);
+      y += sliderStep;
+    }
+    for (int i = 8; i < 8 + panfletoTextoExtraCount * 2; i++) {
+      panfletoTextoSliders[i][0] = innerX;
+      panfletoTextoSliders[i][1] = y;
+      panfletoTextoSliders[i][2] = trackWidth;
+      panfletoTextoSliders[i][3] = -1600;
+      panfletoTextoSliders[i][4] = 1600;
+      int extraIdx = (i - 8) / 2;
+      if ((i - 8) % 2 == 0) panfletoTextoSliders[i][5] = panfletoExtraTextoY[extraIdx];
+      else panfletoTextoSliders[i][5] = panfletoExtraTextoX[extraIdx];
+      desenharSliderPanfletoTexto(i);
+      y += sliderStep;
+    }
+  }
+
+  for (int i = 0; i < panfletoMascaraSliders.length; i++) zerarSliderPanfletoMascara(i);
+  for (int i = 0; i < panfletoEstampaSliders.length; i++) zerarSliderPanfletoEstampa(i);
+  return y;
+}
+
+void zerarSliderPanfletoTexto(int idx) {
+  if (idx < 0 || idx >= panfletoTextoSliders.length) return;
+  for (int j = 0; j < panfletoTextoSliders[idx].length; j++) panfletoTextoSliders[idx][j] = 0;
+}
+
+void zerarSliderPanfletoMascara(int idx) {
+  if (idx < 0 || idx >= panfletoMascaraSliders.length) return;
+  for (int j = 0; j < panfletoMascaraSliders[idx].length; j++) panfletoMascaraSliders[idx][j] = 0;
+}
+
+void zerarSliderPanfletoEstampa(int idx) {
+  if (idx < 0 || idx >= panfletoEstampaSliders.length) return;
+  for (int j = 0; j < panfletoEstampaSliders[idx].length; j++) panfletoEstampaSliders[idx][j] = 0;
+}
+
+void desenharSliderPanfletoMarca(int idx) {
+  float sx = panfletoMarcaSliders[idx][0];
+  float sy = panfletoMarcaSliders[idx][1];
+  float sw = panfletoMarcaSliders[idx][2];
+  float mn = panfletoMarcaSliders[idx][3];
+  float mx = panfletoMarcaSliders[idx][4];
+  float val = panfletoMarcaSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, panfletoMarcaSliderLabels[idx], idx == 2 ? 3 : 1);
+}
+
+void desenharSliderPanfletoLogoExtra(int idx) {
+  float sx = panfletoLogoExtraSliders[idx][0];
+  float sy = panfletoLogoExtraSliders[idx][1];
+  float sw = panfletoLogoExtraSliders[idx][2];
+  float mn = panfletoLogoExtraSliders[idx][3];
+  float mx = panfletoLogoExtraSliders[idx][4];
+  float val = panfletoLogoExtraSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, panfletoLogoExtraSliderLabels[idx], idx == 2 ? 3 : 1);
+}
+
+void desenharSliderPanfletoEstampa(int idx) {
+  float sx = panfletoEstampaSliders[idx][0];
+  float sy = panfletoEstampaSliders[idx][1];
+  float sw = panfletoEstampaSliders[idx][2];
+  float mn = panfletoEstampaSliders[idx][3];
+  float mx = panfletoEstampaSliders[idx][4];
+  float val = panfletoEstampaSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, panfletoEstampaSliderLabels[idx], 2);
+}
+
+void desenharSliderPanfletoMascara(int idx) {
+  float sx = panfletoMascaraSliders[idx][0];
+  float sy = panfletoMascaraSliders[idx][1];
+  float sw = panfletoMascaraSliders[idx][2];
+  float mn = panfletoMascaraSliders[idx][3];
+  float mx = panfletoMascaraSliders[idx][4];
+  float val = panfletoMascaraSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, panfletoMascaraSliderLabels[idx], 2);
+}
+
+void desenharCampoTextoPanfleto(int idx) {
+  float x = panfletoTextoCampos[idx][0];
+  float y = panfletoTextoCampos[idx][1];
+  float w = panfletoTextoCampos[idx][2];
+  float h = panfletoTextoCampos[idx][3];
+  boolean ativo = (panfletoCampoAtivo == idx);
+
+  fill(UI_DARK);
+  textAlign(LEFT, TOP);
+  String rotulo = rotuloInterface(panfletoTextoRotulos[idx]);
+  float rotuloSize = tamanhoTextoParaCaber(rotulo, constrain(height * 0.0132, 10, 11.5), 9, w);
+  textSize(uiTextSize(rotuloSize));
+  text(textoComReticencias(rotulo, w, rotuloSize), uiSnap(x), uiSnap(y - 15));
+
+  if (ativo) fill(UI_GREEN);
+  else fill(UI_LIGHT);
+  stroke(ativo ? UI_GREEN : UI_LINE);
+  strokeWeight(1.2);
+  rect(uiSnap(x), uiSnap(y), uiSnap(w), uiSnap(h), 7);
+  noStroke();
+
+  fill(ativo ? UI_LIGHT : UI_DARK);
+  textAlign(LEFT, CENTER);
+  String valor = panfletoTextoValores[idx];
+  if (valor == null) valor = "";
+  float campoSize = tamanhoTextoParaCaber(valor, constrain(height * 0.013, 9.5, 11), 7, w - 16);
+  textSize(uiTextSize(campoSize));
+  text(textoComReticencias(valor, w - 16, campoSize), uiSnap(x + 8), uiSnap(y + h * 0.5));
+}
+
+void desenharSliderPanfletoSimbolo(int idx) {
+  float sx = panfletoSimboloSliders[idx][0];
+  float sy = panfletoSimboloSliders[idx][1];
+  float sw = panfletoSimboloSliders[idx][2];
+  float mn = panfletoSimboloSliders[idx][3];
+  float mx = panfletoSimboloSliders[idx][4];
+  float val = panfletoSimboloSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, panfletoSimboloSliderLabels[idx], idx == 2 ? 3 : 1);
+}
+
+void desenharSliderPanfletoTexto(int idx) {
+  float sx = panfletoTextoSliders[idx][0];
+  float sy = panfletoTextoSliders[idx][1];
+  float sw = panfletoTextoSliders[idx][2];
+  float mn = panfletoTextoSliders[idx][3];
+  float mx = panfletoTextoSliders[idx][4];
+  float val = panfletoTextoSliders[idx][5];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, panfletoTextoSliderLabels[idx], 1);
+}
+
+void desenharScrollPadrao(float panelX, float maxScroll) {
+  if (maxScroll <= 1) return;
+
+  float trackY = uiHeaderHeight + uiTabsHeight + uiPanelTopGap();
+  float trackH = height - trackY - 18;
+  float thumbH = max(36, trackH * (height / (height + maxScroll)));
+  float thumbY = trackY + (trackH - thumbH) * (painelPadraoScrollY / maxScroll);
+
+  noStroke();
+  fill(UI_DARK);
+  rect(panelX + painelPadraoWidth - 7, trackY, 2, trackH, 2);
+  fill(UI_GREEN);
+  rect(panelX + painelPadraoWidth - 9, thumbY, 5, thumbH, 4);
+}
+
+void desenharBotaoAcao(float[] buttonData, String label) {
+  desenharBotaoAcaoEstado(buttonData, label, false);
+}
+
+void desenharBotaoAcaoEstado(float[] buttonData, String label, boolean ativo) {
+  if (buttonData[2] <= 0 || buttonData[3] <= 0) return;
+  float bx = uiSnap(buttonData[0]);
+  float by = uiSnap(buttonData[1]);
+  float bw = uiSnap(buttonData[2]);
+  float bh = uiSnap(buttonData[3]);
+  boolean hover = mouseX >= bx && mouseX <= bx + bw &&
+    mouseY >= by && mouseY <= by + bh;
+  stroke(hover || ativo ? UI_GREEN : UI_DARK);
+  strokeWeight(1);
+  if (ativo) {
+    fill(UI_GREEN);
+  } else {
+    fill(UI_LIGHT);
+  }
+  rect(bx, by, bw, bh, 5);
+  noStroke();
+  fill(ativo ? UI_LIGHT : UI_DARK);
+  textoCentralizadoAjustado(rotuloInterface(label), bx + bw * 0.5, by + bh * 0.5, max(20, bw - 12), constrain(height * 0.0145, 10.5, 12.4), 9.5);
+}
+
+void desenharCabecalhoGrupo(int groupIdx) {
+  float[] b = sliderGrupoCabecalho[groupIdx];
+  float bx = uiSnap(b[0]);
+  float by = uiSnap(b[1]);
+  float bw = uiSnap(b[2]);
+  float bh = uiSnap(b[3]);
+  boolean hover = mouseX >= bx && mouseX <= bx + bw && mouseY >= by && mouseY <= by + bh;
+  stroke(sliderGrupoAberto[groupIdx] || hover ? UI_GREEN : UI_DARK);
+  fill(sliderGrupoAberto[groupIdx] ? UI_GREEN : UI_LIGHT);
+  rect(bx, by, bw, bh, 6);
+  noStroke();
+  fill(sliderGrupoAberto[groupIdx] ? UI_LIGHT : UI_DARK);
+  textAlign(LEFT, CENTER);
+  String seta = sliderGrupoAberto[groupIdx] ? "v" : ">";
+  String grupoLabel = seta + " " + rotuloInterface(sliderGrupoNomes[groupIdx]);
+  float grupoSize = tamanhoTextoParaCaber(grupoLabel, constrain(height * 0.0135, 10.5, 12), 9.5, bw - 22);
+  textSize(uiTextSize(grupoSize));
+  text(textoComReticencias(grupoLabel, bw - 22, grupoSize), uiSnap(bx + 10), uiSnap(by + bh * 0.5));
+}
+
+void desenharVisualizadorFrequencias(float x, float y, float w, float h) {
+  fill(UI_LIGHT);
+  stroke(UI_DARK);
+  rect(uiSnap(x), uiSnap(y), uiSnap(w), uiSnap(h), 5);
+  noStroke();
+
+  if (!audioInputAvailable || fft == null || mic == null) {
+    fill(UI_DARK);
+    textAlign(CENTER, CENTER);
+    textSize(uiTextSize(constrain(height * 0.0135, 10, 12)));
+    text(rotuloInterface("SEM MICROFONE"), uiSnap(x + w * 0.5), uiSnap(y + h * 0.5));
+    return;
+  }
+
+  int barras = 24;
+  float bw = w / barras;
+  for (int i = 0; i < barras; i++) {
+    float p = (float) i / max(barras - 1, 1);
+    int idx = (int) map(p * p, 0, 1, 1, fft.specSize() - 1);
+    float amp = sqrt(max(fft.getBand(idx), 0));
+    float n = constrain(map(amp, 0, 5, 0, 1), 0, 1);
+    float bh = n * (h - 10);
+
+    fill(UI_GREEN);
+    rect(x + i * bw + 1, y + h - 6 - bh, max(1, bw - 2), bh, 2);
+  }
+}
+
+void desenharSlider(int idx) {
+  float sx = sliders[idx][0];
+  float sy = sliders[idx][1];
+  float sw = sliders[idx][2];
+  float val = sliders[idx][5];
+  float mn = sliders[idx][3];
+  float mx = sliders[idx][4];
+  desenharSliderUi(sx, sy, sw, mn, mx, val, sliderLabels[idx], 3);
+}
+
+float energiaBanda(int fMin, int fMax) {
+  if (!audioInputAvailable || fft == null || mic == null) return 0;
+  float soma = 0;
+  int cont = 0;
+  for (int i = 0; i < fft.specSize(); i++) {
+    float freq = i * (mic.sampleRate() / 2.0) / fft.specSize();
+    if (freq >= fMin && freq <= fMax) {
+      soma += fft.getBand(i);
+      cont++;
+    }
+  }
+  return (cont > 0) ? soma / cont : 0;
+}
+
+void configurarControles() {
+  int sy = 0;
+  int sw = 0;
+  sliders = new float[][] {
+    { 0, sy, sw, 0, 0.5, gateB },
+    { 0, sy, sw, 0, 0.5, gateM },
+    { 0, sy, sw, 0, 0.3, gateT },
+    { 0, sy, sw, 1, 6, boostT },
+    { 0, sy, sw, 0, 0.5, gateP },
+    { 0, sy, sw, 0.1, 3, pB },
+    { 0, sy, sw, 0.1, 3, pM },
+    { 0, sy, sw, 0.1, 3, pT },
+    { 0, sy, sw, 0.1, 3, pP },
+    { 0, sy, sw, 1, 12, duracaoHold },
+    { 0, sy, sw, 1, 20, velDissolve },
+    { 0, sy, sw, 0.004, 0.05, velFolego },
+    { 0, sy, sw, 90, 240, espacamentoPalavra },
+    { 0, sy, sw, 6, 30, typoSize },
+    { 0, sy, sw, -220, 360, typoOffsetY },
+    { 0, sy, sw, 0, 26, typoReact },
+    { 0, sy, sw, -260, 260, typoWordOffsetExtra },
+    { 0, sy, sw, 240, 900, typoBaseWidthSolo },
+    { 0, sy, sw, 320, 1200, typoBaseWidthWord },
+    { 0, sy, sw, 0, 40, typoTrailAlpha },
+    { 0, sy, sw, 40, 100, typoMainAlpha },
+    { 0, sy, sw, -260, 260, typoParGap },
+    { 0, sy, sw, -180, 180, typoParYOffset },
+    { 0, sy, sw, -320, 320, typoParXOffset },
+    { 0, sy, sw, -260, 260, typoVar2YOffsetA },
+    { 0, sy, sw, -260, 260, typoVar2YOffsetB },
+    { 0, sy, sw, 0.7, 4.0, microfoneSensibilidade },
+    { 0, sy, sw, 0.2, 3.0, mutationParams.intensity },
+    { 0, sy, sw, 0, 140, mutationParams.deformationAmount },
+    { 0, sy, sw, 0.05, 2.0, mutationParams.noiseAmount },
+    { 0, sy, sw, 0, 140, mutationParams.displacementAmount },
+    { 0, sy, sw, 0.4, 12, mutationParams.strokeAmount },
+    { 0, sy, sw, 0, 0.55, mutationParams.scaleAmount },
+    { 0, sy, sw, -0.35, 0.35, mutationParams.rotationAmount },
+    { 0, sy, sw, 0.01, 0.22, mutationParams.returnSpeed },
+    { 0, sy, sw, 0.02, 0.32, mutationParams.growthSpeed }
+  };
+
+  sliderLabels = new String[] {
+    "Gate grave",
+    "Gate medio",
+    "Gate agudo",
+    "Boost agudo",
+    "Gate presenca",
+    "Peso grave",
+    "Peso medio",
+    "Peso agudo",
+    "Peso presenca",
+    "Tempo hold",
+    "Velocidade fade",
+    "Velocidade pulso",
+    "Espaco palavra",
+    "Tamanho marca",
+    "Offset Y marca",
+    "Controle interno",
+    "Offset Y palavra",
+    "Controle interno",
+    "Largura marca palavra",
+    "Controle interno",
+    "Opacidade marca",
+    "Gap par",
+    "Offset Y par",
+    "Offset X par",
+    "Ajuste conexao V2",
+    "Y var2 direita",
+    "Sensibilidade mic",
+    "Intensidade de reacao",
+    "Deformação",
+    "Ruído",
+    "Deslocamento",
+    "Traço",
+    "Escala",
+    "Rotação",
+    "Velocidade de retorno",
+    "Velocidade de crescimento"
+  };
+
+  sliderVisivel = new boolean[sliders.length];
+}
+
+void desenharBotaoMostrar() {
+  colorMode(RGB, 255);
+  float tabX = uiSnap(menuOffsetX + menuWidth);
+  float tabY = uiSnap(height * 0.5 - 56);
+  boolean hover = mouseX >= tabX && mouseX <= tabX + menuTabWidth && mouseY >= tabY && mouseY <= tabY + 112;
+
+  noStroke();
+  fill(hover ? UI_GREEN : UI_LIGHT);
+  stroke(hover ? UI_GREEN : UI_DARK);
+  rect(tabX, tabY, menuTabWidth, 112, 0, 10, 10, 0);
+
+  noStroke();
+  fill(hover ? UI_LIGHT : UI_DARK);
+  textAlign(CENTER, CENTER);
+  textSize(uiTextSize(constrain(height * 0.017, 11, 14)));
+  pushMatrix();
+  translate(uiSnap(tabX + menuTabWidth * 0.5), uiSnap(tabY + 56));
+  rotate(-HALF_PI);
+  text(rotuloInterface(mostrarBarra ? "OCULTAR" : "ABRIR"), 0, 0);
+  popMatrix();
+
+  colorMode(HSB, 360, 100, 100, 100);
+}
+
+void desenharBotaoMostrarPadroes() {
+  colorMode(RGB, 255);
+  float tabX = uiSnap(width - painelPadraoWidth + painelPadraoOffsetX - painelPadraoTabWidth);
+  float tabY = uiSnap(height * 0.5 - 56);
+  boolean hover = mouseX >= tabX && mouseX <= tabX + painelPadraoTabWidth && mouseY >= tabY && mouseY <= tabY + 112;
+
+  noStroke();
+  fill(hover ? UI_GREEN : UI_LIGHT);
+  stroke(hover ? UI_GREEN : UI_DARK);
+  rect(tabX, tabY, painelPadraoTabWidth, 112, 10, 0, 0, 10);
+
+  noStroke();
+  fill(hover ? UI_LIGHT : UI_DARK);
+  textAlign(CENTER, CENTER);
+  textSize(uiTextSize(constrain(height * 0.017, 11, 14)));
+  pushMatrix();
+  translate(uiSnap(tabX + painelPadraoTabWidth * 0.5), uiSnap(tabY + 56));
+  rotate(HALF_PI);
+  text(rotuloInterface(mostrarBarraPadroes ? "OCULTAR" : "ABRIR"), 0, 0);
+  popMatrix();
+
+  colorMode(HSB, 360, 100, 100, 100);
+}
