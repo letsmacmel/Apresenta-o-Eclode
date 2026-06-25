@@ -903,28 +903,23 @@ button:hover,
 }
 
 .gallery-grid {
-  display: grid;
-  grid-template-columns: 1fr 1fr;
-  grid-auto-rows: minmax(105px, auto);
-  grid-auto-flow: dense;
+  display: flex;
+  flex-wrap: wrap;
   gap: .8rem;
   min-height: 0;
   align-content: center;
   align-items: center;
-  justify-items: center;
+  justify-content: center;
 }
 
 .gallery-grid .editable-image {
+  flex: 0 1 var(--gallery-basis, 46%);
+  inline-size: auto;
+  width: auto;
   min-height: 0;
+  max-width: min(100%, 540px);
   border-radius: 20px;
-}
-
-.gallery-grid .editable-image.image-wide {
-  grid-column: span 2;
-}
-
-.gallery-grid .editable-image.image-portrait {
-  grid-row: span 2;
+  box-shadow: none;
 }
 
 .gallery-copy {

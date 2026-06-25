@@ -537,8 +537,12 @@ function applyImageRatios() {
       const fitWidth = ratio < 0.82 ? Math.max(42, Math.min(76, ratio * 92)) :
         ratio > 1.45 ? 100 :
         Math.max(72, Math.min(92, ratio * 76));
+      const galleryBasis = ratio > 1.45 ? 48 :
+        ratio < 0.82 ? Math.max(22, Math.min(32, ratio * 42)) :
+        Math.max(30, Math.min(38, ratio * 34));
       slot.style.setProperty("--img-ratio", ratio.toFixed(4));
       slot.style.setProperty("--media-fit-width", `${fitWidth.toFixed(1)}%`);
+      slot.style.setProperty("--gallery-basis", `${galleryBasis.toFixed(1)}%`);
       slot.classList.toggle("image-portrait", ratio < 0.82);
       slot.classList.toggle("image-wide", ratio > 1.45);
       slot.classList.toggle("image-square", ratio >= 0.82 && ratio <= 1.45);
