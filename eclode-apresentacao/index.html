@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <meta name="theme-color" content="#171817" />
     <title>Eclode — apresentação viva</title>
-    <link rel="stylesheet" href="./styles.css?v=8" />
+    <link rel="stylesheet" href="./styles.css?v=13" />
   </head>
   <body>
     <div class="app" id="app">
@@ -49,8 +49,16 @@
             <input id="gradientColorInput" type="color" />
           </label>
           <label>
+            Cor do segundo degradê
+            <input id="gradientColor2Input" type="color" />
+          </label>
+          <label>
             Cor do texto
             <input id="textColorInput" type="color" />
+          </label>
+          <label>
+            Mostrar subtítulo
+            <input id="subtitleVisibleInput" type="checkbox" />
           </label>
           <div class="alignment-control">
             <span>Alinhamento</span>
@@ -84,9 +92,16 @@
             <input id="particleSizeInput" type="range" min="40" max="220" />
           </label>
           <label>
+            Quantidade de bolinhas
+            <input id="brandDensityInput" type="range" min="25" max="220" />
+          </label>
+          <label>
             Mostrar marca
             <input id="brandVisibleInput" type="checkbox" />
           </label>
+          <button class="secondary-button full-button" id="showBrandEverywhere" type="button">
+            Mostrar marca em todas
+          </button>
           <label>
             Marca horizontal
             <input id="brandXInput" type="range" min="-60" max="160" />
@@ -149,7 +164,7 @@
     </div>
 
     <div class="toast" id="toast"></div>
-    <input id="imagePicker" type="file" accept="image/*" hidden />
-    <script src="./app.js?v=23"></script>
+    <input id="imagePicker" type="file" accept="image/*,video/*" hidden />
+    <script src="./app.js?v=41"></script>
   </body>
 </html>

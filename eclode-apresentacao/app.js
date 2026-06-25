@@ -1,4 +1,8 @@
 const STORAGE_KEY = "eclode-deck-v1";
+const MEDIA_DB_NAME = "eclode-media-v1";
+const MEDIA_STORE = "media";
+const BRAND_POINTS_FIX_VERSION = "official-points-v4";
+const OFFICIAL_BRAND_SVG_BASE64 = "PD94bWwgdmVyc2lvbj0iMS4wIiBlbmNvZGluZz0iVVRGLTgiIHN0YW5kYWxvbmU9Im5vIj8+CjxzdmcKICAgaWQ9IkNhbWFkYV8xIgogICB2ZXJzaW9uPSIxLjEiCiAgIHZpZXdCb3g9IjAgMCA5MTcuMTEgNDg4LjE3IgogICBzb2RpcG9kaTpkb2NuYW1lPSJlY2xvZGVfbWFyY2FfYnJhbmNhLnN2ZyIKICAgaW5rc2NhcGU6dmVyc2lvbj0iMS40ICg4NmE4YWQ3LCAyMDI0LTEwLTExKSIKICAgeG1sbnM6aW5rc2NhcGU9Imh0dHA6Ly93d3cuaW5rc2NhcGUub3JnL25hbWVzcGFjZXMvaW5rc2NhcGUiCiAgIHhtbG5zOnNvZGlwb2RpPSJodHRwOi8vc29kaXBvZGkuc291cmNlZm9yZ2UubmV0L0RURC9zb2RpcG9kaS0wLmR0ZCIKICAgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIgogICB4bWxuczpzdmc9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KICA8c29kaXBvZGk6bmFtZWR2aWV3CiAgICAgaWQ9Im5hbWVkdmlldzciCiAgICAgcGFnZWNvbG9yPSIjZmZmZmZmIgogICAgIGJvcmRlcmNvbG9yPSIjMDAwMDAwIgogICAgIGJvcmRlcm9wYWNpdHk9IjAuMjUiCiAgICAgaW5rc2NhcGU6c2hvd3BhZ2VzaGFkb3c9IjIiCiAgICAgaW5rc2NhcGU6cGFnZW9wYWNpdHk9IjAuMCIKICAgICBpbmtzY2FwZTpwYWdlY2hlY2tlcmJvYXJkPSIwIgogICAgIGlua3NjYXBlOmRlc2tjb2xvcj0iI2QxZDFkMSIKICAgICBpbmtzY2FwZTp6b29tPSIwLjI3OTkxOTY2IgogICAgIGlua3NjYXBlOmN4PSI1NzMuMzc4OCIKICAgICBpbmtzY2FwZTpjeT0iNTk0LjgxMzUyIgogICAgIGlua3NjYXBlOndpbmRvdy13aWR0aD0iMTkyMCIKICAgICBpbmtzY2FwZTp3aW5kb3ctaGVpZ2h0PSI5OTEiCiAgICAgaW5rc2NhcGU6d2luZG93LXg9Ii05IgogICAgIGlua3NjYXBlOndpbmRvdy15PSItOSIKICAgICBpbmtzY2FwZTp3aW5kb3ctbWF4aW1pemVkPSIxIgogICAgIGlua3NjYXBlOmN1cnJlbnQtbGF5ZXI9IkNhbWFkYV8xIiAvPgogIDwhLS0gR2VuZXJhdG9yOiBBZG9iZSBJbGx1c3RyYXRvciAyOS44LjcsIFNWRyBFeHBvcnQgUGx1Zy1JbiAuIFNWRyBWZXJzaW9uOiAyLjEuMSBCdWlsZCAxKSAgLS0+CiAgPGRlZnMKICAgICBpZD0iZGVmczEiPgogICAgPHN0eWxlCiAgICAgICBpZD0ic3R5bGUxIj4KICAgICAgLnN0MCB7CiAgICAgICAgZmlsbDogIzFhMWIzOTsKICAgICAgfQogICAgPC9zdHlsZT4KICA8L2RlZnM+CiAgPGcKICAgICBpZD0iZzYiCiAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiI+CiAgICA8cGF0aAogICAgICAgY2xhc3M9InN0MCIKICAgICAgIGQ9Ik0zNDcuMDYsMjU5LjIyYzAtMjYuNjMsMTUuODUtNDUuODEsNDMuNDQtNDUuODFzNDEuODUsMTguNzEsNDEuODUsNDUuODFjMCwyLjctLjE2LDQuNDQtLjYzLDcuMTNoLTY3LjIxYzEuNDMsMTUuMjIsMTIuODQsMjMuNzgsMjkuMTcsMjMuNzgsMTAuNzgsMCwxOS4zNC0yLjIyLDI4LjY5LTcuNzdsNi4zNCwxMy4zMmMtOS44Myw2LjE4LTIxLjQsOS4zNS0zNS45OCw5LjM1LTI5LjgsMC00NS42NS0xOC43MS00NS42NS00NS44MVpNNDE1LjU1LDI1Mi44N2MtLjk1LTE1LjIyLTkuMTktMjQuNTctMjUuMDUtMjQuNTdzLTI1LjUyLDkuNTEtMjUuNTIsMjQuNTdoNTAuNTdaIgogICAgICAgaWQ9InBhdGgxIgogICAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIgLz4KICAgIDxwYXRoCiAgICAgICBjbGFzcz0ic3QwIgogICAgICAgZD0iTTQ0MS44NiwyNTkuMjJjMC0yNi42MywxNS4yMi00NS44MSw0NC4yMy00NS44MSwxMy43OSwwLDI0LjI1LDMuNjUsMzIuMzQsMTAuMTVsLTcuOTMsMTNjLTguMjQtNS4yMy0xNC40My03LjI5LTIyLjk5LTcuMjktMTkuOTcsMC0yOC41MywxMi4zNy0yOC41MywyOS45NnM4LjA4LDMwLjEyLDI4LjUzLDMwLjEyYzguODgsMCwxNS44NS0yLjIyLDI0Ljg5LTcuOTNsNy42MSwxMy4zMmMtOS45OSw2LjY2LTIwLjI5LDEwLjMtMzUuNTEsMTAuMy0yNy45LDAtNDIuNjQtMTguODYtNDIuNjQtNDUuODFaIgogICAgICAgaWQ9InBhdGgyIgogICAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIgLz4KICAgIDxwYXRoCiAgICAgICBjbGFzcz0ic3QwIgogICAgICAgZD0iTTUzMS45LDI4MS44OHYtOTMuNTNsMTYuMTctNC40NHY5NC42NGMwLDcuOTMsMi42OSwxMC43OCw4LjcyLDEwLjc4LDIuODUsMCw1LjcxLS45NSw5LjA0LTMuOTZ2MTQuOWMtMi4wNiwyLjM4LTcuMjksNC43Ni0xMy43OSw0Ljc2LTguODgsMC0yMC4xMy00LjYtMjAuMTMtMjMuMTRaIgogICAgICAgaWQ9InBhdGgzIgogICAgICAgc3R5bGU9ImZpbGw6I2ZmZmZmZiIgLz4KICAgIDxwYXRoCiAgICAgICBjbGFzcz0ic3QwIgogICAgICAgZD0iTTU2OS43OSwyNTkuMjJjMC0yNy4yNywxNS4yMi00NS44MSw0NS42NS00NS44MXM0NS42NSwxOC41NSw0NS42NSw0NS44MS0xNS4yMiw0NS44MS00NS42NSw0NS44MS00NS42NS0xOC41NS00NS42NS00NS44MVpNNjQzLjk4LDI1OS4yMmMwLTE4LjIzLTguNTYtMjkuOTYtMjguNTMtMjkuOTZzLTI4LjUzLDExLjczLTI4LjUzLDI5Ljk2LDguNCwzMC4xMiwyOC41MywzMC4xMiwyOC41My0xMS44OSwyOC41My0zMC4xMloiCiAgICAgICBpZD0icGF0aDQiCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmIiAvPgogICAgPHBhdGgKICAgICAgIGNsYXNzPSJzdDAiCiAgICAgICBkPSJNNzQ1LjQzLDMwNC4zOWMtMS43NC00LjkxLTMuMDEtOS42Ny0zLjgtMTYuMzMtNi41LDExLjg5LTE5LjAyLDE2Ljk2LTMxLjA3LDE2Ljk2LTIzLjMsMC0zOS45NS0xNS44NS0zOS45NS00NC4zOXMxOC41NS00Ny40LDQ3LjQtNDcuNGM3Ljc3LDAsMTUuODUsMS40MywyMi45OSw0LjI4di0yOS4xN2wxNi4zMy00LjQ0djg5Ljg4YzAsMTIuNTIuMTYsMTkuODIsMi42OSwzMC41OWgtMTQuNThaTTc0MC45OSwyNTkuMDZ2LTI2Yy02LjAyLTMuOC0xMi41Mi01LjM5LTIzLjMtNS4zOS0xOS45NywwLTI5Ljk2LDEzLTI5Ljk2LDMyLjk3LDAsMTguNzEsOS4zNSwyOS44LDI1LjY4LDI5LjgsMTguMzksMCwyNy41OC0xMy42MywyNy41OC0zMS4zOVoiCiAgICAgICBpZD0icGF0aDUiCiAgICAgICBzdHlsZT0iZmlsbDojZmZmZmZmIiAvPgogICAgPHBhdGgKICAgICAgIGNsYXNzPSJzdDAiCiAgICAgICBkPSJNNzczLjMzLDI1OS4yMmMwLTI2LjYzLDE1Ljg1LTQ1LjgxLDQzLjQ0LTQ1LjgxczQxLjg1LDE4LjcxLDQxLjg1LDQ1LjgxYzAsMi43LS4xNiw0LjQ0LS42Myw3LjEzaC02Ny4yMWMxLjQzLDE1LjIyLDEyLjg0LDIzLjc4LDI5LjE3LDIzLjc4LDEwLjc4LDAsMTkuMzQtMi4yMiwyOC42OS03Ljc3bDYuMzQsMTMuMzJjLTkuODMsNi4xOC0yMS40LDkuMzUtMzUuOTgsOS4zNS0yOS44LDAtNDUuNjUtMTguNzEtNDUuNjUtNDUuODFaTTg0MS44MSwyNTIuODdjLS45NS0xNS4yMi05LjE5LTI0LjU3LTI1LjA1LTI0LjU3cy0yNS41Miw5LjUxLTI1LjUyLDI0LjU3aDUwLjU3WiIKICAgICAgIGlkPSJwYXRoNiIKICAgICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+CiAgPC9nPgogIDxwYXRoCiAgICAgY2xhc3M9InN0MCIKICAgICBkPSJNNDA4LjEsNDU2Ljc1bC0xMDcuMTUtMTk0LjE4YzEuMjYtMS45OCwxLjUzLTQuNDIuNzgtNi42bDkwLjk5LTE0OC42MWMuNDUtLjc0LjIyLTEuNy0uNTItMi4xNWwtMy4xMi0xLjkxYy0uNzQtLjQ1LTEuNy0uMjItMi4xNS41MmwtODguNTgsMTQ0LjY3LS4yNS4wMywxNS4wNC0xMjQuOTEtMy4xNS0uMzgtMTUuMTIsMTI1LjY1LS4zMy4wNC0uNzUtLjI1LTkuOTktMjI1LjQ5LTQuNDcuMiw5Ljc2LDIyMC4xNS01NC44MS0xMzYuNzktMy4xNSwxLjI2LDQ4LjY3LDEyMS40Ni05MC40MS0xNTQuMWMtLjQ4LS44Mi0xLjU0LTEuMDktMi4zNi0uNjFsLTMuNDcsMi4wNGMtLjgyLjQ4LTEuMDksMS41NC0uNjEsMi4zNmw5NC41MSwxNjEuMDgtMTE3LjA0LTExMS4yNi0yLjYzLDIuNzcsMTE0LjY4LDEwOS4wMS04LjM0LTQuMzgtMTM1LjQ0LTkxLjg2LTEuODIsMi42OCwxMTEuNjEsNzUuNy0xNTkuNTItODMuODQtLjY5LDEuMzEsMTcxLjEyLDg5Ljk1LDEwLjYsNy4xOUw0MC4zNywxNjQuNzNsLTEuMTgsMy41NiwyMzIuMTksNzYuOSw1Ljg0LDMuOTYtNjAuNTEtMTEuNzYtMS4yLDYuMTcsNDYuMTMsOC45Ni0uNDEuMDUtMjAyLjU3LDMuNDRjLS42OS4wMS0xLjI0LjU4LTEuMjMsMS4yN2wuMDUsMi45MmMuMDEuNjkuNTgsMS4yNCwxLjI3LDEuMjNsMTQ0LjM3LTIuNDUtMTE3LjcxLDEyLjk4LjU5LDUuMzksMTc1LjU3LTE5LjM1LDE2LjIyLS4yOC05Ny40NSwzOS4wNSwyLjc0LDYuODUsMTAwLjY1LTQwLjMzLTIxNC4yOSwxMjMuNzIsMS42OCwyLjkyLDIxNC42LTEyMy45LTE1Ny40LDE4NS45NSw1Ljk2LDUuMDUsMTM2LjMyLTE2MS4wNS03Ny40MywxMzUuNTIsNC43MSwyLjY5LDgxLjU2LTE0Mi43NC00MS45Nyw5Mi40MSwyLjEuOTUsNTEuMTEtMTEyLjU0LDEuMS0xLjMxLTE2LjA3LDE3OS4xNSw1LjQuNDgsMTQuMjctMTU5LjA4LDUuMjUsNzAuMjcsNS40LS40LTYuNzgtOTAuNjcsMTA0LjEsMTg4LjY1LDQuNzQtMi42MloiCiAgICAgaWQ9InBhdGg3IgogICAgIHN0eWxlPSJmaWxsOiNmZmZmZmYiIC8+Cjwvc3ZnPgo=";
 
 const initialDeck = {
   title: "Eclode — apresentação viva",
@@ -10,6 +14,8 @@ const initialDeck = {
       energy: 72,
       eyebrow: "Monografia · 2026",
       title: "eclode",
+      subtitle: "identidade generativa em movimento",
+      subtitleVisible: true,
       body: "Uma identidade que não se repete. Ela cresce, reage e deixa cada gesto participar da forma."
     },
     {
@@ -19,6 +25,8 @@ const initialDeck = {
       energy: 88,
       eyebrow: "01 · O princípio",
       title: "A marca como organismo.",
+      subtitle: "um sistema vivo entre regra, som e acidente",
+      subtitleVisible: true,
       body: "Eclode nasce do encontro entre regra e acidente. Um sistema visual capaz de produzir diferença sem perder sua origem.",
       note: "FORMA · TEMPO · INTERAÇÃO"
     },
@@ -29,6 +37,8 @@ const initialDeck = {
       energy: 64,
       eyebrow: "02 · Sistema generativo",
       title: "Fragmentos encontram direção.",
+      subtitle: "pontos, campo e imagem se reorganizam em tempo real",
+      subtitleVisible: true,
       body: "Partículas se aproximam, desviam e se reorganizam. O desenho final é uma memória do movimento.",
       image: "../panfleto_20260617_082745.png"
     },
@@ -39,6 +49,8 @@ const initialDeck = {
       energy: 54,
       eyebrow: "03 · Um sistema aberto",
       title: "Múltiplas saídas. Um mesmo código.",
+      subtitle: "da apresentação à impressão, tudo nasce do mesmo pulso",
+      subtitleVisible: true,
       body: "O projeto atravessa impressão, movimento e experiência digital.",
       metrics: [
         ["∞", "composições possíveis"],
@@ -62,12 +74,18 @@ let previousAudioLevel = 0;
 let burstEnergy = 0;
 const audioBands = { bass: 0, mid: 0, treble: 0 };
 let imageTarget = null;
+let mediaDbPromise;
+const mediaUrlCache = new Map();
 let draggingBrand = false;
 let draggedPageIndex = null;
 let brandBounds = { x: 0, y: 0, width: 0, height: 0 };
 let brandPoints = [];
+let brandPointCloudFailed = false;
+let brandPointCloudLoading = false;
+let lastAnimationError = "";
 let gradientClock = 0;
 let previousFrameTime = 0;
+let embeddedBrandSvgText = "";
 
 const $ = (selector) => document.querySelector(selector);
 const stage = $("#stage");
@@ -76,7 +94,9 @@ const canvas = $("#organism");
 const ctx = canvas.getContext("2d");
 const brandImage = new Image();
 brandImage.addEventListener("load", buildBrandPointCloud);
+brandImage.addEventListener("error", () => buildBrandPointCloudFromEmbeddedSvg());
 brandImage.src = "./eclode_marca_branca.svg";
+buildBrandPointCloudFromEmbeddedSvg();
 const particles = Array.from({ length: 24 }, (_, index) => ({
   seed: Math.random() * 1000,
   phase: Math.random() * Math.PI * 2,
@@ -87,37 +107,223 @@ const particles = Array.from({ length: 24 }, (_, index) => ({
 }));
 
 function buildBrandPointCloud() {
+  if (!brandImage.complete || !brandImage.naturalWidth) return;
   const sampleWidth = 920;
   const sampleHeight = Math.round(sampleWidth * (488.17 / 917.11));
   const sampleCanvas = document.createElement("canvas");
   const sampleContext = sampleCanvas.getContext("2d", { willReadFrequently: true });
   sampleCanvas.width = sampleWidth;
   sampleCanvas.height = sampleHeight;
-  sampleContext.drawImage(brandImage, 0, 0, sampleWidth, sampleHeight);
-  const pixels = sampleContext.getImageData(0, 0, sampleWidth, sampleHeight).data;
+  let pixels;
+  try {
+    sampleContext.drawImage(brandImage, 0, 0, sampleWidth, sampleHeight);
+    pixels = sampleContext.getImageData(0, 0, sampleWidth, sampleHeight).data;
+  } catch (error) {
+    brandPointCloudFailed = true;
+    lastAnimationError = error.message || "Falha ao ler pixels do SVG oficial";
+    loadBrandPointCloudFromOfficialSvg();
+    return;
+  }
+  setBrandPointsFromPixels(pixels, sampleWidth, sampleHeight);
+}
+
+function makeBrandPoint(x, y, sampleWidth, sampleHeight, alpha = 255) {
+  const ox = x - sampleWidth / 2;
+  const oy = y - sampleHeight / 2;
+  return {
+    ox,
+    oy,
+    x: ox,
+    y: oy,
+    vx: 0,
+    vy: 0,
+    phase: (x * 0.071 + y * 0.043) % (Math.PI * 2),
+    edge: alpha < 245 ? 1 : 0
+  };
+}
+
+function setBrandPointsFromPixels(pixels, sampleWidth, sampleHeight) {
   const points = [];
-  const step = 7;
+  const step = 5;
   for (let y = 0; y < sampleHeight; y += step) {
     for (let x = 0; x < sampleWidth; x += step) {
       const alpha = pixels[(y * sampleWidth + x) * 4 + 3];
       if (alpha < 72) continue;
       const edgeNoise = Math.sin(x * 12.9898 + y * 78.233) * 43758.5453;
       if (alpha < 210 && edgeNoise - Math.floor(edgeNoise) > 0.64) continue;
-      const ox = x - sampleWidth / 2;
-      const oy = y - sampleHeight / 2;
-      points.push({
-        ox,
-        oy,
-        x: ox,
-        y: oy,
-        vx: 0,
-        vy: 0,
-        phase: (x * 0.071 + y * 0.043) % (Math.PI * 2),
-        edge: alpha < 245 ? 1 : 0
-      });
+      points.push(makeBrandPoint(x, y, sampleWidth, sampleHeight, alpha));
     }
   }
-  brandPoints = points;
+  if (points.length) {
+    brandPointCloudFailed = false;
+    brandPoints = points;
+  } else {
+    brandPointCloudFailed = true;
+    lastAnimationError = "SVG oficial carregou, mas não gerou pontos";
+  }
+}
+
+function getEmbeddedBrandSvg() {
+  if (embeddedBrandSvgText) return embeddedBrandSvgText;
+  try {
+    const bytes = Uint8Array.from(atob(OFFICIAL_BRAND_SVG_BASE64), (character) => character.charCodeAt(0));
+    embeddedBrandSvgText = new TextDecoder("utf-8").decode(bytes);
+  } catch (error) {
+    lastAnimationError = error.message || "Falha ao ler SVG oficial embutido";
+  }
+  return embeddedBrandSvgText;
+}
+
+async function buildBrandPointCloudFromEmbeddedSvg() {
+  const svgText = getEmbeddedBrandSvg();
+  if (!svgText) return;
+  await buildBrandPointCloudFromSvgText(svgText);
+}
+
+async function loadBrandPointCloudFromOfficialSvg() {
+  if (brandPointCloudLoading) return;
+  brandPointCloudLoading = true;
+  try {
+    let svgText = getEmbeddedBrandSvg();
+    if (!svgText && typeof fetch === "function") {
+      const response = await fetch("./eclode_marca_branca.svg", { cache: "no-store" });
+    if (!response.ok) throw new Error("SVG oficial não encontrado");
+      svgText = await response.text();
+    }
+    if (!svgText) throw new Error("SVG oficial nÃ£o disponÃ­vel");
+    await buildBrandPointCloudFromSvgText(svgText);
+  } catch (error) {
+    brandPointCloudFailed = true;
+    lastAnimationError = error.message || "Falha ao carregar SVG oficial";
+  } finally {
+    brandPointCloudLoading = false;
+  }
+}
+
+async function buildBrandPointCloudFromSvgText(svgText) {
+  await buildBrandPointCloudFromInlineSvg(svgText);
+  if (!brandPoints.length) buildBrandPointCloudFromSvgDom(svgText);
+  if (!brandPoints.length) buildBrandPointCloudFromSvgPaths(svgText);
+}
+
+function buildBrandPointCloudFromInlineSvg(svgText) {
+  const image = new Image();
+  const url = `data:image/svg+xml;charset=utf-8,${encodeURIComponent(svgText)}`;
+  return new Promise((resolve) => {
+    image.onload = () => {
+      const sampleWidth = 920;
+      const sampleHeight = Math.round(sampleWidth * (488.17 / 917.11));
+      const sampleCanvas = document.createElement("canvas");
+      const sampleContext = sampleCanvas.getContext("2d", { willReadFrequently: true });
+      sampleCanvas.width = sampleWidth;
+      sampleCanvas.height = sampleHeight;
+      try {
+        sampleContext.drawImage(image, 0, 0, sampleWidth, sampleHeight);
+        const pixels = sampleContext.getImageData(0, 0, sampleWidth, sampleHeight).data;
+        setBrandPointsFromPixels(pixels, sampleWidth, sampleHeight);
+      } catch (error) {
+        brandPointCloudFailed = true;
+        lastAnimationError = error.message || "Falha ao rasterizar SVG oficial";
+      }
+      resolve();
+    };
+    image.onerror = () => resolve();
+    image.src = url;
+  });
+}
+
+function buildBrandPointCloudFromSvgDom(svgText) {
+  let host;
+  try {
+    host = document.createElement("div");
+    host.style.cssText = "position:absolute;left:-99999px;top:-99999px;width:0;height:0;overflow:hidden;";
+    host.innerHTML = svgText;
+    document.body.appendChild(host);
+    const svg = host.querySelector("svg");
+    const paths = Array.from(host.querySelectorAll("path"))
+      .filter((path) => typeof path.isPointInFill === "function" || typeof path.isPointInStroke === "function");
+    if (!svg || !paths.length || typeof DOMPoint !== "function") return;
+
+    const viewBox = (svg.getAttribute("viewBox") || "0 0 917.11 488.17")
+      .trim()
+      .split(/\s+/)
+      .map(Number);
+    const sourceWidth = viewBox[2] || 917.11;
+    const sourceHeight = viewBox[3] || 488.17;
+    const sampleWidth = 920;
+    const sampleHeight = Math.round(sampleWidth * (sourceHeight / sourceWidth));
+    const step = 6;
+    const points = [];
+
+    for (let y = 0; y < sampleHeight; y += step) {
+      for (let x = 0; x < sampleWidth; x += step) {
+        const sourceX = viewBox[0] + (x / sampleWidth) * sourceWidth;
+        const sourceY = viewBox[1] + (y / sampleHeight) * sourceHeight;
+        const point = new DOMPoint(sourceX, sourceY);
+        const inside = paths.some((path) =>
+          (typeof path.isPointInFill === "function" && path.isPointInFill(point)) ||
+          (typeof path.isPointInStroke === "function" && path.isPointInStroke(point))
+        );
+        if (!inside) continue;
+        points.push(makeBrandPoint(x, y, sampleWidth, sampleHeight, 255));
+      }
+    }
+
+    if (points.length) {
+      brandPoints = points;
+      brandPointCloudFailed = false;
+      lastAnimationError = "";
+    }
+  } catch (error) {
+    brandPointCloudFailed = true;
+    lastAnimationError = error.message || "Falha ao converter SVG oficial via DOM";
+  } finally {
+    host?.remove();
+  }
+}
+
+function buildBrandPointCloudFromSvgPaths(svgText) {
+  const sampleWidth = 920;
+  const sampleHeight = Math.round(sampleWidth * (488.17 / 917.11));
+  let paths;
+  try {
+    const svgDocument = new DOMParser().parseFromString(svgText, "image/svg+xml");
+    paths = Array.from(svgDocument.querySelectorAll("path"))
+      .map((path) => path.getAttribute("d"))
+      .filter(Boolean)
+      .map((pathData) => new Path2D(pathData));
+  } catch (error) {
+    brandPointCloudFailed = true;
+    lastAnimationError = error.message || "Falha ao ler paths do SVG oficial";
+    return;
+  }
+  if (!paths.length) return;
+
+  const hitCanvas = document.createElement("canvas");
+  const hitContext = hitCanvas.getContext("2d");
+  hitCanvas.width = sampleWidth;
+  hitCanvas.height = sampleHeight;
+  const points = [];
+  const step = 6;
+  const scaleX = 917.11 / sampleWidth;
+  const scaleY = 488.17 / sampleHeight;
+  for (let y = 0; y < sampleHeight; y += step) {
+    for (let x = 0; x < sampleWidth; x += step) {
+      const sourceX = x * scaleX;
+      const sourceY = y * scaleY;
+      if (!paths.some((path) => hitContext.isPointInPath(path, sourceX, sourceY))) continue;
+      points.push(makeBrandPoint(x, y, sampleWidth, sampleHeight, 255));
+    }
+  }
+
+  if (points.length) {
+    brandPoints = points;
+    brandPointCloudFailed = false;
+    lastAnimationError = "";
+  } else {
+    brandPointCloudFailed = true;
+    lastAnimationError = "SVG oficial carregou, mas os paths não geraram pontos";
+  }
 }
 
 function loadDeck() {
@@ -133,16 +339,28 @@ function normalizeDeck(value) {
   value.pages.forEach((page) => {
     page.brandColor ??= page.accent || "#c8ff62";
     page.gradientColor ??= page.accent || "#c8ff62";
+    page.gradientColor2 ??= "#ff725c";
     page.textColor ??= "#f4f1e9";
     page.textAlign ??= "left";
     page.textSize ??= 100;
     page.textWidth ??= 100;
+    page.subtitle ??= "Subtítulo editável";
+    page.subtitleVisible ??= false;
     page.particleSize ??= 100;
+    page.brandDensity ??= 120;
     page.reactiveMode ??= "breathe";
     page.brandVisible ??= true;
     page.brandX ??= 70;
     page.brandY ??= 48;
     page.brandSize ??= 46;
+    if (page.brandPointsFixVersion !== BRAND_POINTS_FIX_VERSION) {
+      page.brandVisible = true;
+      page.brandX = 50;
+      page.brandY = 46;
+      page.brandSize = 62;
+      page.brandDensity = 180;
+      page.brandPointsFixVersion = BRAND_POINTS_FIX_VERSION;
+    }
     page.gallerySide ??= "right";
     page.images ??= [
       "../shape_20260523_104733.png",
@@ -203,15 +421,132 @@ function escapeHtml(value = "") {
     .replaceAll(">", "&gt;");
 }
 
+function escapeAttribute(value = "") {
+  return escapeHtml(String(value)).replaceAll('"', "&quot;");
+}
+
 function editable(field, className, tag = "div", value) {
   return `<${tag} class="${className}" contenteditable="true" spellcheck="false" data-field="${field}">${escapeHtml(value ?? "")}</${tag}>`;
 }
 
+function subtitleBlock(page) {
+  return page.subtitleVisible ? editable("subtitle", "subtitle", "div", page.subtitle) : "";
+}
+
+function openMediaDb() {
+  if (mediaDbPromise) return mediaDbPromise;
+  mediaDbPromise = new Promise((resolve, reject) => {
+    const request = indexedDB.open(MEDIA_DB_NAME, 1);
+    request.onupgradeneeded = () => {
+      request.result.createObjectStore(MEDIA_STORE, { keyPath: "id" });
+    };
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  return mediaDbPromise;
+}
+
+async function saveMediaFile(file) {
+  const id = crypto.randomUUID();
+  const db = await openMediaDb();
+  await new Promise((resolve, reject) => {
+    const transaction = db.transaction(MEDIA_STORE, "readwrite");
+    transaction.objectStore(MEDIA_STORE).put({
+      id,
+      type: file.type || "application/octet-stream",
+      name: file.name,
+      blob: file,
+      updatedAt: Date.now()
+    });
+    transaction.oncomplete = resolve;
+    transaction.onerror = () => reject(transaction.error);
+  });
+  return `eclode-media:${id}:${encodeURIComponent(file.type || "application/octet-stream")}`;
+}
+
+function parseMediaRef(source = "") {
+  if (!source.startsWith("eclode-media:")) return null;
+  const [, id, encodedType = ""] = source.split(":");
+  return { id, type: decodeURIComponent(encodedType) };
+}
+
+async function getMediaObjectUrl(source) {
+  const ref = parseMediaRef(source);
+  if (!ref) return source;
+  if (mediaUrlCache.has(ref.id)) return mediaUrlCache.get(ref.id);
+  const db = await openMediaDb();
+  const record = await new Promise((resolve, reject) => {
+    const transaction = db.transaction(MEDIA_STORE, "readonly");
+    const request = transaction.objectStore(MEDIA_STORE).get(ref.id);
+    request.onsuccess = () => resolve(request.result);
+    request.onerror = () => reject(request.error);
+  });
+  if (!record?.blob) return "";
+  const url = URL.createObjectURL(record.blob);
+  mediaUrlCache.set(ref.id, url);
+  return url;
+}
+
+function mediaTypeFromSource(source = "") {
+  const ref = parseMediaRef(source);
+  const value = ref?.type || source;
+  if (value.startsWith("video/") || value.startsWith("data:video/")) return "video";
+  if (/\.(mp4|webm|mov|m4v|ogv)(\?|#|$)/i.test(value)) return "video";
+  return "image";
+}
+
 function imageSlot(source, field, label = "Trocar imagem") {
-  return `<button class="editable-image" data-image-field="${field}" title="${label}">
-    <img src="${source}" alt="" />
+  const type = mediaTypeFromSource(source);
+  const sourceAttr = escapeAttribute(source);
+  const labelAttr = escapeAttribute(label.replace("imagem", "mídia"));
+  const localRef = parseMediaRef(source);
+  const media =
+    type === "video"
+      ? `<video data-media-source="${sourceAttr}"${localRef ? "" : ` src="${sourceAttr}"`} autoplay muted loop playsinline preload="metadata"></video>`
+      : `<img data-media-source="${sourceAttr}" src="${sourceAttr}" alt="" />`;
+  return `<div class="editable-image" role="button" tabindex="0" data-image-field="${field}" title="${labelAttr}">
+    ${media}
     <span>${label}</span>
-  </button>`;
+  </div>`;
+}
+
+async function hydrateLocalMedia() {
+  const mediaElements = Array.from(slideContent.querySelectorAll("[data-media-source]"));
+  await Promise.all(mediaElements.map(async (element) => {
+    const source = element.dataset.mediaSource;
+    if (!parseMediaRef(source)) return;
+    const url = await getMediaObjectUrl(source);
+    if (!url) return;
+    element.src = url;
+    if (element.tagName === "VIDEO") {
+      element.load();
+      element.play().catch(() => {});
+    }
+  }));
+}
+
+function applyImageRatios() {
+  slideContent.querySelectorAll(".editable-image img, .editable-image video").forEach((image) => {
+    const apply = () => {
+      const width = image.naturalWidth || image.videoWidth;
+      const height = image.naturalHeight || image.videoHeight;
+      if (!width || !height) return;
+      const ratio = width / height;
+      const slot = image.closest(".editable-image");
+      if (!slot) return;
+      const fitWidth = ratio < 0.82 ? Math.max(42, Math.min(76, ratio * 92)) :
+        ratio > 1.45 ? 100 :
+        Math.max(72, Math.min(92, ratio * 76));
+      slot.style.setProperty("--img-ratio", ratio.toFixed(4));
+      slot.style.setProperty("--media-fit-width", `${fitWidth.toFixed(1)}%`);
+      slot.classList.toggle("image-portrait", ratio < 0.82);
+      slot.classList.toggle("image-wide", ratio > 1.45);
+      slot.classList.toggle("image-square", ratio >= 0.82 && ratio <= 1.45);
+    };
+    image.addEventListener("load", apply, { once: true });
+    image.addEventListener("loadedmetadata", apply, { once: true });
+    if (image.complete) apply();
+  });
 }
 
 function renderSlide() {
@@ -230,11 +565,13 @@ function renderSlide() {
     cover: () => `
       ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
       ${editable("title", "title", "h1", page.title)}
+      ${subtitleBlock(page)}
       ${editable("body", "body-copy", "p", page.body)}
     `,
     statement: () => `
       ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
       ${editable("title", "title", "h1", page.title)}
+      ${subtitleBlock(page)}
       <div class="statement-footer">
         ${editable("body", "body-copy", "p", page.body)}
         ${editable("note", "micro", "div", page.note)}
@@ -247,6 +584,7 @@ function renderSlide() {
       <div class="single-copy">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
     `,
@@ -258,6 +596,7 @@ function renderSlide() {
       <div class="split-copy">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
     `,
@@ -270,6 +609,7 @@ function renderSlide() {
       <div class="triple-copy">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
     `,
@@ -277,6 +617,7 @@ function renderSlide() {
       <div class="timeline-header">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
       <div class="timeline-track">
@@ -294,6 +635,7 @@ function renderSlide() {
       <div class="bullets-header">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
       <div class="adaptive-bullets" style="--bullet-count:${page.bullets.length}">
@@ -313,6 +655,7 @@ function renderSlide() {
       <div class="gallery-copy">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
     `,
@@ -320,6 +663,7 @@ function renderSlide() {
       <div class="metrics-intro">
         ${editable("eyebrow", "eyebrow", "div", page.eyebrow)}
         ${editable("title", "title", "h1", page.title)}
+        ${subtitleBlock(page)}
         ${editable("body", "body-copy", "p", page.body)}
       </div>
       <div class="metric-stack">
@@ -338,7 +682,9 @@ function renderSlide() {
   $("#layoutSelect").value = page.layout;
   $("#brandColorInput").value = page.brandColor;
   $("#gradientColorInput").value = page.gradientColor;
+  $("#gradientColor2Input").value = page.gradientColor2;
   $("#textColorInput").value = page.textColor;
+  $("#subtitleVisibleInput").checked = page.subtitleVisible;
   $("#alignLeftButton").classList.toggle("active", page.textAlign === "left");
   $("#alignCenterButton").classList.toggle("active", page.textAlign === "center");
   $("#textSizeInput").value = page.textSize;
@@ -346,6 +692,7 @@ function renderSlide() {
   $("#energyInput").value = page.energy;
   $("#reactiveModeSelect").value = page.reactiveMode;
   $("#particleSizeInput").value = page.particleSize;
+  $("#brandDensityInput").value = page.brandDensity;
   $("#brandVisibleInput").checked = page.brandVisible;
   $("#brandXInput").value = page.brandX;
   $("#brandYInput").value = page.brandY;
@@ -353,6 +700,8 @@ function renderSlide() {
   $("#bulletControls").hidden = page.layout !== "bullets";
   bindEditable();
   bindImages();
+  hydrateLocalMedia().then(applyImageRatios).catch(() => {});
+  applyImageRatios();
   bindBulletRemoval();
   renderNavigation();
 }
@@ -377,9 +726,15 @@ function bindEditable() {
 
 function bindImages() {
   slideContent.querySelectorAll(".editable-image").forEach((element) => {
-    element.addEventListener("click", () => {
+    const openPicker = () => {
       imageTarget = element.dataset.imageField;
       $("#imagePicker").click();
+    };
+    element.addEventListener("click", openPicker);
+    element.addEventListener("keydown", (event) => {
+      if (event.key !== "Enter" && event.key !== " ") return;
+      event.preventDefault();
+      openPicker();
     });
   });
 }
@@ -468,12 +823,14 @@ function makePage() {
     accent: "#c8ff62",
     brandColor: "#c8ff62",
     gradientColor: "#56751f",
+    gradientColor2: "#ff725c",
     textColor: "#f4f1e9",
     textAlign: "left",
     textSize: 100,
     textWidth: 100,
     energy: 70,
     particleSize: 100,
+    brandDensity: 120,
     reactiveMode: "breathe",
     brandVisible: true,
     brandX: 70,
@@ -516,6 +873,8 @@ function makePage() {
     ],
     eyebrow: `${String(deck.pages.length + 1).padStart(2, "0")} · Nova página`,
     title: "Uma nova ideia eclode.",
+    subtitle: "Subtítulo editável",
+    subtitleVisible: false,
     body: "Clique para editar este texto."
   };
 }
@@ -665,10 +1024,17 @@ function updateAndDrawBrandField(
   color,
   energy,
   particleSize,
+  brandDensity,
   reactiveMode
 ) {
-  if (!brandPoints.length) return;
   const [r, g, b] = color;
+  if (!brandPoints.length) {
+    if (brandImage.complete && brandImage.naturalWidth) buildBrandPointCloud();
+    if (!brandPoints.length) {
+      loadBrandPointCloudFromOfficialSvg();
+      return;
+    }
+  }
   const scale = displayWidth / 920;
   const scaleY = displayHeight / 488.17;
   const bass = Math.max(audioBands.bass, energy * 0.035);
@@ -682,6 +1048,7 @@ function updateAndDrawBrandField(
     burst: { returnK: 0.035, damping: 0.77, spreadX: 190, spreadY: 125 }
   };
   const settings = modeSettings[reactiveMode] || modeSettings.breathe;
+  const drawEvery = Math.max(1, Math.round(220 / Math.max(25, brandDensity || 120)));
   const returnK = settings.returnK;
   const damping = Math.max(0.71, settings.damping - soundDrive * 0.045 - burstEnergy * 0.035);
   const maxOffsetX = 18 + soundDrive * settings.spreadX + bass * 52 + burstEnergy * 110;
@@ -689,7 +1056,7 @@ function updateAndDrawBrandField(
 
   ctx.save();
   ctx.globalCompositeOperation = "source-over";
-  for (let index = 0; index < brandPoints.length; index += 1) {
+  for (let index = 0; index < brandPoints.length; index += drawEvery) {
     const point = brandPoints[index];
     const homeX = point.ox - point.x;
     const homeY = point.oy - point.y;
@@ -756,6 +1123,7 @@ function updateAndDrawBrandField(
 }
 
 function drawOrganism(time = 0) {
+  try {
   const page = deck.pages[currentIndex];
   const width = canvas.clientWidth;
   const height = canvas.clientHeight;
@@ -776,10 +1144,11 @@ function drawOrganism(time = 0) {
   const energy = Math.min(1.35, baseEnergy + audioLevel * 0.75);
   const [r, g, b] = hexToRgb(page.brandColor);
   const [gr, gg, gb] = hexToRgb(page.gradientColor);
+  const [g2r, g2g, g2b] = hexToRgb(page.gradientColor2 || page.gradientColor);
   const t = time * 0.00018;
   const centerX = width * (page.brandX / 100);
   const centerY = height * (page.brandY / 100);
-  gradientClock += deltaSeconds * 0.075;
+  gradientClock += deltaSeconds * 0.052;
   const modeGradientBoost =
     page.reactiveMode === "burst" ? burstEnergy * 0.34 :
     page.reactiveMode === "flow" ? audioBands.mid * 0.12 :
@@ -795,33 +1164,52 @@ function drawOrganism(time = 0) {
   ctx.fillStyle = background;
   ctx.fillRect(0, 0, width, height);
 
+  const slowMix = gradientClock * 0.34;
   const gradientBlobs = [
     {
       x: width * (0.5 + Math.sin(gradientClock * 0.72) * 0.42),
       y: height * (0.5 + Math.cos(gradientClock * 0.49) * 0.25),
       radius: Math.max(width, height) * 0.34 * fieldBreath,
-      alpha: 0.34
+      alpha: 0.30,
+      color: [gr, gg, gb]
     },
     {
       x: width * (0.5 + Math.sin(gradientClock * 0.41 + 2.2) * 0.38),
       y: height * (0.5 + Math.cos(gradientClock * 0.57 + 1.1) * 0.30),
       radius: Math.max(width, height) * 0.46 * (1 + audioBands.bass * 0.10),
-      alpha: 0.18
+      alpha: 0.14,
+      color: [gr, gg, gb]
     },
     {
       x: width * (0.5 + Math.cos(gradientClock * 0.33 + 0.7) * 0.35),
       y: height * (0.5 + Math.sin(gradientClock * 0.38 + 2.8) * 0.28),
       radius: Math.max(width, height) * 0.40,
-      alpha: 0.12
+      alpha: 0.09,
+      color: [gr, Math.round(gg * 0.5), Math.min(255, gb + 35)]
+    },
+    {
+      x: width * (0.5 + Math.sin(slowMix + 0.4) * 0.48),
+      y: height * (0.5 + Math.cos(slowMix * 0.78 + 1.6) * 0.36),
+      radius: Math.max(width, height) * (0.50 + Math.sin(slowMix * 1.2) * 0.045 + audioBands.mid * 0.05),
+      alpha: 0.22,
+      color: [g2r, g2g, g2b]
+    },
+    {
+      x: width * (0.5 + Math.cos(slowMix * 0.82 + 3.1) * 0.46),
+      y: height * (0.5 + Math.sin(slowMix * 0.68 + 2.4) * 0.34),
+      radius: Math.max(width, height) * (0.43 + Math.cos(slowMix) * 0.04 + audioBands.bass * 0.045),
+      alpha: 0.18,
+      color: [g2r, Math.min(255, Math.round(g2g * 1.08)), Math.min(255, Math.round(g2b * 1.12))]
     }
   ];
 
   ctx.globalCompositeOperation = "screen";
-  gradientBlobs.forEach((blob, index) => {
+  gradientBlobs.forEach((blob) => {
     const glow = ctx.createRadialGradient(blob.x, blob.y, 0, blob.x, blob.y, blob.radius);
-    const warmth = index === 2 ? [gr, Math.round(gg * 0.5), Math.min(255, gb + 35)] : [gr, gg, gb];
+    const warmth = blob.color;
     glow.addColorStop(0, `rgba(${warmth[0]},${warmth[1]},${warmth[2]},${blob.alpha * energy})`);
-    glow.addColorStop(0.38, `rgba(${warmth[0]},${warmth[1]},${warmth[2]},${blob.alpha * 0.36 * energy})`);
+    glow.addColorStop(0.34, `rgba(${warmth[0]},${warmth[1]},${warmth[2]},${blob.alpha * 0.42 * energy})`);
+    glow.addColorStop(0.72, `rgba(${warmth[0]},${warmth[1]},${warmth[2]},${blob.alpha * 0.10 * energy})`);
     glow.addColorStop(1, `rgba(${warmth[0]},${warmth[1]},${warmth[2]},0)`);
     ctx.fillStyle = glow;
     ctx.fillRect(0, 0, width, height);
@@ -866,13 +1254,20 @@ function drawOrganism(time = 0) {
       [r, g, b],
       energy,
       page.particleSize,
+      page.brandDensity,
       page.reactiveMode
     );
   }
 
   ctx.globalCompositeOperation = "source-over";
   ctx.shadowBlur = 0;
+  } catch (error) {
+    lastAnimationError = error.message || "Erro na animação";
+    ctx.globalCompositeOperation = "source-over";
+    ctx.shadowBlur = 0;
+  } finally {
   animationFrame = requestAnimationFrame(drawOrganism);
+  }
 }
 
 $("#addPage").addEventListener("click", () => {
@@ -892,18 +1287,35 @@ $("#prevPage").addEventListener("click", () => goToPage(currentIndex - 1));
 $("#nextPage").addEventListener("click", () => goToPage(currentIndex + 1));
 $("#exportDeck").addEventListener("click", exportDeck);
 $("#importDeck").addEventListener("change", (event) => event.target.files[0] && importDeck(event.target.files[0]));
-$("#imagePicker").addEventListener("change", (event) => {
+$("#imagePicker").addEventListener("change", async (event) => {
   const file = event.target.files[0];
   if (!file || !imageTarget) return;
-  const reader = new FileReader();
-  reader.onload = () => {
-    setNested(deck.pages[currentIndex], imageTarget, reader.result);
+  const isVideo = file.type.startsWith("video/");
+  const isImage = file.type.startsWith("image/");
+  if (!isVideo && !isImage) {
+    toast("Escolha uma imagem ou um vídeo");
+    event.target.value = "";
+    return;
+  }
+
+  try {
+    const reference = await saveMediaFile(file);
+    setNested(deck.pages[currentIndex], imageTarget, reference);
     saveDeck();
     renderSlide();
-    toast("Imagem substituída");
-  };
-  reader.readAsDataURL(file);
-  event.target.value = "";
+    toast(isVideo ? "Vídeo inserido" : "Imagem substituída");
+  } catch {
+    const reader = new FileReader();
+    reader.onload = () => {
+      setNested(deck.pages[currentIndex], imageTarget, reader.result);
+      saveDeck();
+      renderSlide();
+      toast(isVideo ? "Vídeo inserido sem armazenamento local" : "Imagem substituída");
+    };
+    reader.readAsDataURL(file);
+  } finally {
+    event.target.value = "";
+  }
 });
 $("#audioToggle").addEventListener("click", startAudioReaction);
 $("#toggleEditor").addEventListener("click", () => {
@@ -952,10 +1364,20 @@ $("#gradientColorInput").addEventListener("input", (event) => {
   deck.pages[currentIndex].gradientColor = event.target.value;
   saveDeck();
 });
+$("#gradientColor2Input").addEventListener("input", (event) => {
+  deck.pages[currentIndex].gradientColor2 = event.target.value;
+  saveDeck();
+});
 $("#textColorInput").addEventListener("input", (event) => {
   deck.pages[currentIndex].textColor = event.target.value;
   stage.style.setProperty("--slide-ink", event.target.value);
   saveDeck();
+});
+$("#subtitleVisibleInput").addEventListener("change", (event) => {
+  deck.pages[currentIndex].subtitleVisible = event.target.checked;
+  renderSlide();
+  saveDeck();
+  toast(event.target.checked ? "Subtítulo ativado nesta página" : "Subtítulo oculto nesta página");
 });
 function setTextAlignment(alignment) {
   deck.pages[currentIndex].textAlign = alignment;
@@ -994,6 +1416,10 @@ $("#particleSizeInput").addEventListener("input", (event) => {
   deck.pages[currentIndex].particleSize = Number(event.target.value);
   saveDeck();
 });
+$("#brandDensityInput").addEventListener("input", (event) => {
+  deck.pages[currentIndex].brandDensity = Number(event.target.value);
+  saveDeck();
+});
 $("#addBullet").addEventListener("click", () => {
   const page = deck.pages[currentIndex];
   if (page.layout !== "bullets") return;
@@ -1006,6 +1432,21 @@ $("#brandVisibleInput").addEventListener("change", (event) => {
   deck.pages[currentIndex].brandVisible = event.target.checked;
   saveDeck();
   toast(event.target.checked ? "Marca visível nesta página" : "Somente degradê nesta página");
+});
+$("#showBrandEverywhere").addEventListener("click", () => {
+  deck.pages.forEach((page) => {
+    page.brandVisible = true;
+    page.brandX = 50;
+    page.brandY = 46;
+    page.brandSize = 62;
+    page.brandDensity = 180;
+    page.brandPointsFixVersion = BRAND_POINTS_FIX_VERSION;
+  });
+  if (brandImage.complete && brandImage.naturalWidth) buildBrandPointCloud();
+  if (!brandPoints.length) loadBrandPointCloudFromOfficialSvg();
+  renderSlide();
+  saveDeck();
+  toast("Marca ativada em todas as páginas");
 });
 $("#brandXInput").addEventListener("input", (event) => {
   deck.pages[currentIndex].brandX = Number(event.target.value);
@@ -1078,7 +1519,27 @@ document.addEventListener("keydown", (event) => {
 }, true);
 
 window.addEventListener("resize", resizeCanvas);
+window.eclodeDebug = () => ({
+  brandPoints: brandPoints.length,
+  brandImageComplete: brandImage.complete,
+  brandImageNaturalWidth: brandImage.naturalWidth,
+  brandPointCloudFailed,
+  lastAnimationError,
+  currentPage: deck.pages[currentIndex] && {
+    brandVisible: deck.pages[currentIndex].brandVisible,
+    brandX: deck.pages[currentIndex].brandX,
+    brandY: deck.pages[currentIndex].brandY,
+    brandSize: deck.pages[currentIndex].brandSize,
+    brandDensity: deck.pages[currentIndex].brandDensity
+  }
+});
 renderSlide();
 resizeCanvas();
 cancelAnimationFrame(animationFrame);
 drawOrganism();
+setTimeout(() => {
+  const page = deck.pages[currentIndex];
+  if (page?.brandVisible && !brandPoints.length) {
+    toast(`Marca ainda não virou pontos: ${lastAnimationError || "aguardando SVG"}`);
+  }
+}, 2200);
